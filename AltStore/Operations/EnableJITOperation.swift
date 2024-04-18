@@ -48,7 +48,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl)
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "\(UserDefaults.standard.textInputSideJITServerurl)")
                 }
                 return
             } else {

@@ -1356,7 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest(from: bundleIdentifier)
+                    getrequest(from: installedApp.bundleIdentifier)
                 }
                 return
             } else {

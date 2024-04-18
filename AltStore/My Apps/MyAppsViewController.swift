@@ -1396,8 +1396,49 @@ private extension MyAppsViewController
         }
         return nil
     }
-    func getrequest(from installedApp: String) -> String? {
-            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+    class ServiceBrowser: NSObject, NetServiceBrowserDelegate, NetServiceDelegate {
+
+        private var netServiceBrowser = NetServiceBrowser()
+
+        override init() {
+            super.init()
+            netServiceBrowser.delegate = self
+            netServiceBrowser.searchForServices(ofType: "_http._tcp.", inDomain: "local.")
+        }
+
+        func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
+            print("Found service: \(service)")
+            service.delegate = self
+            service.resolve(withTimeout: 5.0)
+        }
+
+        func netServiceDidResolveAddress(_ sender: NetService) {
+            if let address = sender.addresses?.first {
+                let url = URL(string: "http://\(address):8080")
+                let task = URLSession.shared.dataTask(with: url!) {(data, response, error) in
+                    guard let data = data else { return }
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                            print(json)
+                            getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://\(address):8080")
+                        }
+                    } catch let error as NSError {
+                        print("Failed to load: \(error.localizedDescription)")
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl)
+                    }
+                }
+                task.resume()
+            }
+        }
+
+        func netServiceBrowser(_ browser: NetServiceBrowser, didNotSearch errorDict: [String : NSNumber]) {
+            print("Did not search: \(errorDict)")
+            getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl)
+        }
+    }
+
+    func getrequest(from installedApp: String, IP ipadress: String) -> String? {
+            let serverUrl = ipadress ?? ""
             let serverUdid: String = fetch_udid()?.toString() ?? ""
             let appname = installedApp
             let serveradress2 = serverUdid + "/" + appname

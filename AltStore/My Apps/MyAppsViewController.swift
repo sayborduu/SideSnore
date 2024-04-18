@@ -1419,7 +1419,7 @@ private extension MyAppsViewController
             if let data = data {
                     if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
                         let content = UNMutableNotificationContent()
-                        content.title = "JIT Succsessfully Enabled"
+                        content.title = "JIT Successfully Enabled"
                         content.subtitle = "JIT Enabled For \(installedApp)"
                         content.sound = UNNotificationSound.default
 

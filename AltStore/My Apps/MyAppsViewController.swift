@@ -11,6 +11,7 @@ import MobileCoreServices
 import Intents
 import Combine
 import UniformTypeIdentifiers
+import Foundation
 
 import AltStoreCore
 import AltSign
@@ -1351,9 +1352,18 @@ private extension MyAppsViewController
     func enableJIT(for installedApp: InstalledApp)
     {
         if #available(iOS 17, *) {
-            let toastView = ToastView(error: OperationError.tooNewError)
-            toastView.show(in: self)
-            return
+            let sideJITenabled = UserDefaults.standard.sidejitenable
+            if sideJITenabled {
+                if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
+                    print("\(bundleIdentifier)")
+                    getrequest(from: bundleIdentifier)
+                }
+                return
+            } else {
+                let toastView = ToastView(error: OperationError.tooNewError)
+                toastView.show(in: self)
+                print("beans")
+            }
         }
         if !minimuxer.ready() {
             let toastView = ToastView(error: MinimuxerError.NoConnection)
@@ -1371,6 +1381,72 @@ private extension MyAppsViewController
                 }
             }
         }
+    }
+    
+    func getBundleIdentifier(from installedApp: String) -> String? {
+        let pattern = "resignedBundleIdentifier = \"(.*?)\""
+        let regex = try? NSRegularExpression(pattern: pattern)
+        let range = NSRange(location: 0, length: installedApp.utf16.count)
+        if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {
+            let range = match.range(at: 1)
+            if let swiftRange = Range(range, in: installedApp) {
+                return String(installedApp[swiftRange])
+            }
+        }
+        return nil
+    }
+    func getrequest(from installedApp: String) -> String? {
+            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+            let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
+            let appname = installedApp
+            let serveradress2 = serverUdid + "/" + appname
+        
+        
+            var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
+        guard let url = URL(string: combinedString) else {
+            print("Invalid URL: " + combinedString)
+            return("beans")
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                print("Error fetching data: \(error.localizedDescription)")
+                return
+            }
+            
+            if let data = data {
+                    if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
+                        let content = UNMutableNotificationContent()
+                        content.title = "JIT Succsessfully Enabled"
+                        content.subtitle = "JIT Enabled For \(installedApp)"
+                        content.sound = UNNotificationSound.default
+
+                        // show this notification five seconds from now
+                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+
+                        // choose a random identifier
+                        let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
+
+                        // add our notification request
+                        UNUserNotificationCenter.current().add(request)
+                    } else {
+                        let content = UNMutableNotificationContent()
+                        content.title = "An Error Occured"
+                        content.subtitle = "Please check your SideJITServer Console"
+                        content.sound = UNNotificationSound.default
+
+                        // show this notification five seconds from now
+                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+
+                        // choose a random identifier
+                        let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
+
+                        // add our notification request
+                        UNUserNotificationCenter.current().add(request)
+                }
+            }
+        }.resume()
+        return("")
     }
 }
 

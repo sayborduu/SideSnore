@@ -48,52 +48,59 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest(from: bundleIdentifier)
+                    getrequest(from: installedApp.resignedBundleIdentifier)
                 }
-                func getBundleIdentifier(from installedApp: String) -> String? {
-                    let pattern = "resignedBundleIdentifier = \"(.*?)\""
-                    let regex = try? NSRegularExpression(pattern: pattern)
-                    let range = NSRange(location: 0, length: installedApp.utf16.count)
-                    if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {
-                        let range = match.range(at: 1)
-                        if let swiftRange = Range(range, in: installedApp) {
-                            return String(installedApp[swiftRange])
-                        }
+                return
+            } else {
+                let toastView = ToastView(error: OperationError.tooNewError)
+                print("beans")
+            }
+            
+            func getBundleIdentifier(from installedApp: String) -> String? {
+                // Get the bundle ID
+                let pattern = "BundleIdentifier = \"(.*?)\""
+                let regex = try? NSRegularExpression(pattern: pattern)
+                let range = NSRange(location: 0, length: installedApp.utf16.count)
+                if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {
+                    let range = match.range(at: 1)
+                    if let swiftRange = Range(range, in: installedApp) {
+                        return String(installedApp[swiftRange])
                     }
-                    return nil
                 }
-                func getrequest(from installedApp: String) -> String? {
+                return nil
+            }
+            func getrequest(from installedApp: String) -> String? {
                     let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                    let serverUdid = (parsePlist(from: ""))
+                    let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
                     let appname = installedApp
-                    let serveradress2 = "\(serverUdid)" + "/" + appname
-                    
-                    
+                    let serveradress2 = serverUdid + "/" + appname
+                
+                
                     var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
-                    guard let url = URL(string: combinedString) else {
-                        print("Invalid URL: " + combinedString)
-                        return("beans")
+                guard let url = URL(string: combinedString) else {
+                    print("Invalid URL: " + combinedString)
+                    return("beans")
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
                     }
                     
-                    URLSession.shared.dataTask(with: url) { data, _, error in
-                        if let error = error {
-                            print("Error fetching data: \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        if let data = data {
+                    if let data = data {
                             if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
                                 let content = UNMutableNotificationContent()
                                 content.title = "JIT Succsessfully Enabled"
                                 content.subtitle = "JIT Enabled For \(installedApp)"
                                 content.sound = UNNotificationSound.default
-                                
+
                                 // show this notification five seconds from now
                                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-                                
+
                                 // choose a random identifier
                                 let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
-                                
+
                                 // add our notification request
                                 UNUserNotificationCenter.current().add(request)
                             } else {
@@ -101,33 +108,32 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                                 content.title = "An Error Occured"
                                 content.subtitle = "Please check your SideJITServer Console"
                                 content.sound = UNNotificationSound.default
-                                
+
                                 // show this notification five seconds from now
                                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-                                
+
                                 // choose a random identifier
                                 let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
-                                
+
                                 // add our notification request
                                 UNUserNotificationCenter.current().add(request)
-                            }
                         }
-                    }.resume()
-                    return("")
-                }
-            } else {
-                installedApp.managedObjectContext?.perform {
-                    var retries = 3
-                    while (retries > 0){
-                        do {
-                            try debug_app(installedApp.resignedBundleIdentifier)
-                            self.finish(.success(()))
-                            retries = 0
-                        } catch {
-                            retries -= 1
-                            if (retries <= 0){
-                                self.finish(.failure(error))
-                            }
+                    }
+                }.resume()
+                return("")
+            }
+        } else {
+            installedApp.managedObjectContext?.perform {
+                var retries = 3
+                while (retries > 0){
+                    do {
+                        try debug_app(installedApp.resignedBundleIdentifier)
+                        self.finish(.success(()))
+                        retries = 0
+                    } catch {
+                        retries -= 1
+                        if (retries <= 0){
+                            self.finish(.failure(error))
                         }
                     }
                 }
@@ -135,4 +141,3 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
         }
     }
 }
-

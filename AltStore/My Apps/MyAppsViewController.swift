@@ -1384,7 +1384,8 @@ private extension MyAppsViewController
     }
     
     func getBundleIdentifier(from installedApp: String) -> String? {
-        let pattern = "resignedBundleIdentifier = \"(.*?)\""
+        // Get the bundle ID
+        let pattern = "BundleIdentifier = \"(.*?)\""
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: installedApp.utf16.count)
         if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {
@@ -1397,9 +1398,9 @@ private extension MyAppsViewController
     }
     func getrequest(from installedApp: String) -> String? {
             let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-           let serverUdid = (parsePlist(from: ""))
+            let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
             let appname = installedApp
-        let serveradress2 = "\(serverUdid)" + "/" + appname
+            let serveradress2 = serverUdid + "/" + appname
         
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"

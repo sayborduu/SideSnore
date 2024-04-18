@@ -1356,7 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest(from: installedApp.bundleIdentifier)
+                    getrequest(from: bundleIdentifier)
                 }
                 return
             } else {
@@ -1384,8 +1384,7 @@ private extension MyAppsViewController
     }
     
     func getBundleIdentifier(from installedApp: String) -> String? {
-        // Get the bundle ID
-        let pattern = "BundleIdentifier = \"(.*?)\""
+        let pattern = "resignedBundleIdentifier = \"(.*?)\""
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: installedApp.utf16.count)
         if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {
@@ -1398,9 +1397,9 @@ private extension MyAppsViewController
     }
     func getrequest(from installedApp: String) -> String? {
             let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-            let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
+           let serverUdid = (parsePlist(from: ""))
             let appname = installedApp
-            let serveradress2 = serverUdid + "/" + appname
+        let serveradress2 = "\(serverUdid)" + "/" + appname
         
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"

@@ -69,77 +69,57 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                 }
                 return nil
             }
-            import Foundation
-
             func getrequest(from installedApp: String) -> String? {
-                let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                var serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
-                let appname = installedApp
-
-                // Parse the plist and get the UDID
-                if let path = Bundle.main.path(forResource: "YourPlistFileName", ofType: "plist"),
-                   let xml = FileManager.default.contents(atPath: path) {
-                    do {
-                        if let plistData = try PropertyListSerialization.propertyList(from: xml, options: .mutableContainersAndLeaves, format: nil) as? [String: Any] {
-                            // Find the UDID key and store its value in serverUdid
-                            if let udid = plistData["UDID"] as? String {
-                                serverUdid = udid
-                            } else {
-                                print("UDID key not found in plist")
-                            }
-                        }
-                    } catch {
-                        print("Error parsing plist: \(error)")
-                    }
-                }
-
-                let serveradress2 = serverUdid + "/" + appname
-                var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
-
+                    let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                    let serverUdid: String = fetch_udid()?.toString() ?? ""
+                    let appname = installedApp
+                    let serveradress2 = serverUdid + "/" + appname
+                
+                
+                    var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
                 guard let url = URL(string: combinedString) else {
                     print("Invalid URL: " + combinedString)
                     return("beans")
                 }
-
+                
                 URLSession.shared.dataTask(with: url) { data, _, error in
                     if let error = error {
                         print("Error fetching data: \(error.localizedDescription)")
                         return
                     }
-
+                    
                     if let data = data {
-                        if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
-                            let content = UNMutableNotificationContent()
-                            content.title = "JIT Succsessfully Enabled"
-                            content.subtitle = "JIT Enabled For \(installedApp)"
-                            content.sound = UNNotificationSound.default
+                            if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
+                                let content = UNMutableNotificationContent()
+                                content.title = "JIT Succsessfully Enabled"
+                                content.subtitle = "JIT Enabled For \(installedApp)"
+                                content.sound = UNNotificationSound.default
 
-                            // show this notification five seconds from now
-                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                                // show this notification five seconds from now
+                                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
 
-                            // choose a random identifier
-                            let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
+                                // choose a random identifier
+                                let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
 
-                            // add our notification request
-                            UNUserNotificationCenter.current().add(request)
-                        } else {
-                            let content = UNMutableNotificationContent()
-                            content.title = "An Error Occured"
-                            content.subtitle = "Please check your SideJITServer Console"
-                            content.sound = UNNotificationSound.default
+                                // add our notification request
+                                UNUserNotificationCenter.current().add(request)
+                            } else {
+                                let content = UNMutableNotificationContent()
+                                content.title = "An Error Occured"
+                                content.subtitle = "Please check your SideJITServer Console"
+                                content.sound = UNNotificationSound.default
 
-                            // show this notification five seconds from now
-                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                                // show this notification five seconds from now
+                                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
 
-                            // choose a random identifier
-                            let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
+                                // choose a random identifier
+                                let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
 
-                            // add our notification request
-                            UNUserNotificationCenter.current().add(request)
+                                // add our notification request
+                                UNUserNotificationCenter.current().add(request)
                         }
                     }
                 }.resume()
-
                 return("")
             }
         } else {

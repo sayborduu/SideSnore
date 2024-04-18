@@ -70,11 +70,10 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                 return nil
             }
             func getrequest(from installedApp: String) -> String? {
-                    let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                    let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
-                    let appname = installedApp
-                    let serveradress2 = serverUdid + "/" + appname
-                
+                let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                let serverUdid = (parsePlist())
+                let appname = installedApp
+                let serveradress2 = "\(serverUdid)" + "/" + appname
                 
                     var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
                 guard let url = URL(string: combinedString) else {

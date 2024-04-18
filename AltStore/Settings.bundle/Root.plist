@@ -104,20 +104,6 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Current Device UDID</string>
-			<key>Key</key>
-			<string>textInputSideJITServerudid</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-		</dict>
 	</array>
 </dict>
 </plist>

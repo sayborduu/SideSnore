@@ -1398,9 +1398,9 @@ private extension MyAppsViewController
     }
     func getrequest(from installedApp: String) -> String? {
             let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-            let serverUdid: String = UserDefaults.standard.textInputSideJITServerudid ?? ""
+            let serverUdid = (parsePlist())
             let appname = installedApp
-            let serveradress2 = serverUdid + "/" + appname
+            let serveradress2 = "\(serverUdid)" + "/" + appname
         
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
@@ -1448,6 +1448,28 @@ private extension MyAppsViewController
             }
         }.resume()
         return("")
+    }
+    public func parsePlist() {
+        if let path = Bundle.main.path(forResource: "ALTPairingFile", ofType: "mobiledevicepairing"),
+           let xml = FileManager.default.contents(atPath: path) {
+            do {
+                if let plistData = try PropertyListSerialization.propertyList(from: xml, options: .mutableContainersAndLeaves, format: nil) as? [String: Any] {
+                    // Use the plistData dictionary
+                    print(plistData)
+                    
+                    // Find the UDID key and store its value in a variable
+                    if let udid = plistData["UDID"] as? String {
+                        print(udid)
+                        return String(udid)
+                    } else {
+                        print("UDID key not found in plist")
+                    }
+                }
+            } catch {
+                print("Error parsing plist: \(error)")
+            }
+        }
+        return String("")
     }
 }
 

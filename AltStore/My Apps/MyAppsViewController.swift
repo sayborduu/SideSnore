@@ -1384,7 +1384,7 @@ private extension MyAppsViewController
     }
     
     func getBundleIdentifier(from installedApp: String) -> String? {
-        let pattern = "resignedBundleIdentifier = \"(.*?)\""
+        let pattern = "BundleIdentifier = \"(.*?)\""
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: installedApp.utf16.count)
         if let match = regex?.firstMatch(in: installedApp, options: [], range: range) {

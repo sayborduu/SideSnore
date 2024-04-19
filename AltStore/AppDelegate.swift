@@ -58,6 +58,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
+        askfornetwork()
+        
         // Register default settings before doing anything else.
         UserDefaults.registerDefaults()
         
@@ -92,6 +94,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         self.prepareForBackgroundFetch()
         
+        return true
+    }
+    func askfornetwork() {
+        // Create a network operation at launch with a dummy address
+        let url = URL(string: "http://192.0.2.0")! // This is a reserved IP address for documentation and is not likely to respond.
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            print(data)
+        }
+        task.resume()
+
         return true
     }
     

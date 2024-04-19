@@ -129,7 +129,6 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                 if !activeApps.contains(installedApp)
                 {
                     let activeAppsCount = activeApps.map { $0.requiredActiveSlots }.reduce(0, +)
-                    let sideJITenabled = UserDefaults.standard.sidejitenable
                     
                     let availableActiveApps = max(sideloadedAppsLimit - activeAppsCount, 0)
                     if installedApp.requiredActiveSlots <= availableActiveApps
@@ -138,7 +137,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                         // so implicitly activate it.
                         installedApp.isActive = true
                         activeApps.append(installedApp)
-                        if sideJITenabled {
+                        if UserDefaults.standard.sidejitenable {
                             getrequest()
                         }
                     }
@@ -160,7 +159,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                     var combinedString = "\(serverUrl)" + "/re/"
                 guard let url = URL(string: combinedString) else {
                     print("Invalid URL: " + combinedString)
-                    return("beans")
+                    return
                 }
                 
                 URLSession.shared.dataTask(with: url) { data, _, error in
@@ -173,7 +172,6 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                         print(data)
                     }
                 }.resume()
-                return("")
             }
         }
 

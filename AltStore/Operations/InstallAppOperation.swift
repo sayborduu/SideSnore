@@ -153,7 +153,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
             }
 
             func getrequest() {
-                    let serverUrl = "\(UserDefaults.standard.textInputSideJITServerurl)"
+                    let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
                 
                     var combinedString = "\(serverUrl)" + "/re/"
                 guard let url = URL(string: combinedString) else {

@@ -1407,8 +1407,7 @@ private extension MyAppsViewController
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {
             print("Invalid URL: " + combinedString)
-            var error2 = error.withLocalizedFailure(NSLocalizedString("Invalid SideJITServer URL (this is needed to refresh SideJITServer for new apps)", comment: ""))
-            let toastView = ToastView(error: error2)
+            let toastView = ToastView(error: OperationError.tooNewError)
             toastView.show(in: self)
             return("beans")
         }
@@ -1416,14 +1415,11 @@ private extension MyAppsViewController
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
-                var error3 = error.withLocalizedFailure(NSLocalizedString("Unable to connect to SideJITServer please check that the right ip is entered and you have enabled local network", comment: ""))
-                let toastView = ToastView(error: error3)
-                toastView.show(in: self)
                 return
             }
             
             if let data = data {
-                if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp.name)'!" {
+                    if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
                         let content = UNMutableNotificationContent()
                         content.title = "JIT Successfully Enabled"
                         content.subtitle = "JIT Enabled For \(installedApp)"
@@ -1438,10 +1434,19 @@ private extension MyAppsViewController
                         // add our notification request
                         UNUserNotificationCenter.current().add(request)
                     } else {
+                        let content = UNMutableNotificationContent()
+                        content.title = "An Error Occured"
+                        content.subtitle = "Please check your SideJITServer Console"
+                        content.sound = UNNotificationSound.default
 
-                        var error3 = error.withLocalizedFailure(NSLocalizedString("Error Enabling JIT Please Check SideJITServer if you restart this and it continues then please contact the SideStore Developers over Discord", comment: ""))
-                        let toastView = ToastView(error: error3)
-                        toastView.show(in: self)
+                        // show this notification five seconds from now
+                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+
+                        // choose a random identifier
+                        let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
+
+                        // add our notification request
+                        UNUserNotificationCenter.current().add(request)
                 }
             }
         }.resume()

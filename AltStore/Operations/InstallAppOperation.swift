@@ -154,7 +154,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
 
             func getrequest() {
                 let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                var combinedString = serverUrl + "/re/"
+                var combinedString2 = serverUrl + "/re/"
                 guard let url = URL(string: combinedString2) else {
                     print("Invalid URL")
                     return
@@ -169,7 +169,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                     if let data = data {
                         print(String(data: data, encoding: .utf8) ?? "Invalid data")
                         do {
-                            let decodedData = try JSONDecoder().decode([Item].self, from: data)
+                            let decodedData = try JSONDecoder().decode(Item.self, from: data)
                             print(decodedData)
                         } catch {
                             print("Error decoding data: \(error.localizedDescription)")

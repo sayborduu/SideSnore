@@ -102,7 +102,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     func getrequest2() {
         let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-        var combinedString = serverUrl + "/re/"
+        var combinedString2 = serverUrl + "/re/"
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")
             return

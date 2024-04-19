@@ -1356,6 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
+                    getrequest2()
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
@@ -1396,7 +1397,29 @@ private extension MyAppsViewController
         }
         return nil
     }
-
+    
+    func getrequest2() {
+            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+        
+            var combinedString = "\(serverUrl)" + "/re/"
+            guard let url = URL(string: combinedString) else {
+                print("Invalid URL: " + combinedString)
+                return
+            }
+        
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                if let error = error {
+                    print("Error fetching data: \(error.localizedDescription)")
+                    return
+                }
+      
+                if let data = data {
+                    print(data)
+            }
+        }
+    }
+    
+    
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
             let serverUrl = ipadress ?? ""
             let serverUdid: String = fetch_udid()?.toString() ?? ""
@@ -1407,8 +1430,6 @@ private extension MyAppsViewController
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {
             print("Invalid URL: " + combinedString)
-            let toastView = ToastView(error: OperationError.tooNewError)
-            toastView.show(in: self)
             return("beans")
         }
         

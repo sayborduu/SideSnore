@@ -70,12 +70,67 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                 return nil
             }
         
+            
+            public func refresh1(from installedApp: String) -> String? {
+                let combinedString2 = installedApp + "/re/"
+                guard let url = URL(string: combinedString2) else {
+                    print("Invalid URL")
+                    return
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let data = data {
+                        print(String(data: data, encoding: .utf8) ?? "Invalid data")
+                        do {
+                            let decodedData = try JSONDecoder().decode([Item].self, from: data)
+                            print(decodedData)
+                        } catch {
+                            print("Error decoding data: \(error.localizedDescription)")
+                        }
+                    }
+                }.resume()
+            }
+            
+            func refresh2(from installedApp: String) -> String? {
+                    let serverUrl = ipadress
+                    let serverUdid: String = fetch_udid()?.toString() ?? ""
+                    let appname = installedApp
+                    let serveradress2 = "/re"
+                
+                refresh1(from: serverUrl)
+                
+                    var combinedString = serverUrl + "/" + serveradress2 + "/"
+                guard let url = URL(string: combinedString) else {
+                    print("Invalid URL: " + combinedString)
+                    return("beans")
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let data = data {
+                        print("pain and suffering in a bottle")
+                    }
+                }.resume()
+                return("")
+            }
+        }
+            
             func getrequest(from installedApp: String, IP ipadress: String) -> String? {
                     let serverUrl = ipadress ?? ""
                     let serverUdid: String = fetch_udid()?.toString() ?? ""
                     let appname = installedApp
                     let serveradress2 = serverUdid + "/" + appname
                 
+                refresh2(from: serverUrl)
                 
                     var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
                 guard let url = URL(string: combinedString) else {
@@ -92,7 +147,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                     if let data = data {
                             if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
                                 let content = UNMutableNotificationContent()
-                                content.title = "JIT Succsessfully Enabled"
+                                content.title = "JIT Successfully Enabled"
                                 content.subtitle = "JIT Enabled For \(installedApp)"
                                 content.sound = UNNotificationSound.default
 
@@ -123,6 +178,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                 }.resume()
                 return("")
             }
+
         } else {
             installedApp.managedObjectContext?.perform {
                 var retries = 3

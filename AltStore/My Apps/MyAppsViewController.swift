@@ -1423,13 +1423,41 @@ private extension MyAppsViewController
         }.resume()
     }
     
+    func refresh2(from installedApp: String) -> String? {
+            let serverUrl = ipadress
+            let serverUdid: String = fetch_udid()?.toString() ?? ""
+            let appname = installedApp
+            let serveradress2 = "/re"
+        
+        refresh1(from: serverUrl)
+        
+            var combinedString = serverUrl + "/" + serveradress2 + "/"
+        guard let url = URL(string: combinedString) else {
+            print("Invalid URL: " + combinedString)
+            return("beans")
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                print("Error fetching data: \(error.localizedDescription)")
+                return
+            }
+            
+            if let data = data {
+                print("pain and suffering in a bottle")
+            }
+        }.resume()
+        return("")
+    }
+}
+    
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
             let serverUrl = ipadress ?? ""
             let serverUdid: String = fetch_udid()?.toString() ?? ""
             let appname = installedApp
             let serveradress2 = serverUdid + "/" + appname
         
-        refresh1(from: serverUrl)
+        refresh2(from: serverUrl)
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {

@@ -139,7 +139,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                         activeApps.append(installedApp)
                         if UserDefaults.standard.sidejitenable {
                             getrequest()
-                            refresh1(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                            //refresh1(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
                         }
                     }
                     else
@@ -151,56 +151,6 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
             else
             {
                 installedApp.isActive = true
-            }
-            public func refresh1(from installedApp: String) -> String? {
-                let combinedString2 = installedApp + "/re/"
-                guard let url = URL(string: combinedString2) else {
-                    print("Invalid URL")
-                    return
-                }
-                
-                URLSession.shared.dataTask(with: url) { data, _, error in
-                    if let error = error {
-                        print("Error fetching data: \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    if let data = data {
-                        print(String(data: data, encoding: .utf8) ?? "Invalid data")
-                        do {
-                            let decodedData = try JSONDecoder().decode([Item].self, from: data)
-                            print(decodedData)
-                        } catch {
-                            print("Error decoding data: \(error.localizedDescription)")
-                        }
-                    }
-                }.resume()
-            }
-
-            func getrequest() {
-                let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                var combinedString2 = serverUrl + "/re/"
-                guard let url = URL(string: combinedString2) else {
-                    print("Invalid URL")
-                    return
-                }
-                
-                URLSession.shared.dataTask(with: url) { data, _, error in
-                    if let error = error {
-                        print("Error fetching data: \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    if let data = data {
-                        print(String(data: data, encoding: .utf8) ?? "Invalid data")
-                        do {
-                            let decodedData = try JSONDecoder().decode(Item.self, from: data)
-                            print(decodedData)
-                        } catch {
-                            print("Error decoding data: \(error.localizedDescription)")
-                        }
-                    }
-                }.resume()
             }
             
             var installing = true

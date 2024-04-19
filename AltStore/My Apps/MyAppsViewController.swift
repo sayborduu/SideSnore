@@ -1356,7 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest2()
+                    refresh1(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
@@ -1398,9 +1398,8 @@ private extension MyAppsViewController
         return nil
     }
     
-    func getrequest() {
-        let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-        var combinedString2 = serverUrl + "/re/"
+    public func refresh1(from installedApp: String) -> String? {
+        let combinedString2 = installedApp + "/re/"
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")
             return
@@ -1415,7 +1414,7 @@ private extension MyAppsViewController
             if let data = data {
                 print(String(data: data, encoding: .utf8) ?? "Invalid data")
                 do {
-                    let decodedData = try JSONDecoder().decode(Item.self, from: data)
+                    let decodedData = try JSONDecoder().decode([Item].self, from: data)
                     print(decodedData)
                 } catch {
                     print("Error decoding data: \(error.localizedDescription)")
@@ -1424,13 +1423,13 @@ private extension MyAppsViewController
         }.resume()
     }
     
-    
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
             let serverUrl = ipadress ?? ""
             let serverUdid: String = fetch_udid()?.toString() ?? ""
             let appname = installedApp
             let serveradress2 = serverUdid + "/" + appname
         
+        refresh1(from: serverUrl)
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {

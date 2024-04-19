@@ -58,14 +58,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
-
+        askfornetwork()
+        
         // Register default settings before doing anything else.
         UserDefaults.registerDefaults()
-        
-        if UserDefaults.standard.sidejitenable {
-            getrequest2()
-        }
-        askfornetwork()
         
         DatabaseManager.shared.start { (error) in
             if let error = error
@@ -100,33 +96,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
-    func getrequest2() {
-        let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-        var combinedString2 = serverUrl + "/re/"
-        guard let url = URL(string: combinedString2) else {
-            print("Invalid URL")
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                return
-            }
-            
-            if let data = data {
-                print(String(data: data, encoding: .utf8) ?? "Invalid data")
-                do {
-                    let decodedData = try JSONDecoder().decode([Item].self, from: data)
-                    print(decodedData)
-                } catch {
-                    print("Error decoding data: \(error.localizedDescription)")
-                }
-            }
-        }.resume()
-    }
-    
-    
     func askfornetwork() {
         // Create a network operation at launch with a dummy address
         let url = URL(string: "http://192.0.2.0")! // This is a reserved IP address for documentation and is not likely to respond.

@@ -353,3 +353,4 @@ public extension InstalledApp
         return InstalledApp.alternateIconURL(for: self)
     }
 }
+

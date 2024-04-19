@@ -1309,6 +1309,23 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): restoreContext.installedApp = installedApp
+                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+                        let combinedString2 = SJSURL + "/re/"
+
+                        guard let url = URL(string: combinedString2) else {
+                            print("Invalid URL")
+                            return
+                        }
+
+                        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                            if let error = error {
+                                print("Error: \(error)")
+                            } else {
+                                // Do nothing with data or response
+                            }
+                        }
+
+                        task.resume()
                     case .failure(let error):
                         restoreContext.error = error
                         appContext.error = error
@@ -1453,6 +1470,23 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): context.installedApp = installedApp
+                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+                        let combinedString2 = SJSURL + "/re/"
+
+                        guard let url = URL(string: combinedString2) else {
+                            print("Invalid URL")
+                            return
+                        }
+
+                        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                            if let error = error {
+                                print("Error: \(error)")
+                            } else {
+                                // Do nothing with data or response
+                            }
+                        }
+
+                        task.resume()
                     case .failure(let error): context.error = error
                     }
                     
@@ -1687,6 +1721,23 @@ private extension AppManager
             switch operation
             {
             case .install: event = .installedApp(installedApp)
+                let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+                let combinedString2 = SJSURL + "/re/"
+
+                guard let url = URL(string: combinedString2) else {
+                    print("Invalid URL")
+                    return
+                }
+
+                let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                    if let error = error {
+                        print("Error: \(error)")
+                    } else {
+                        // Do nothing with data or response
+                    }
+                }
+
+                task.resume()
             case .refresh: event = .refreshedApp(installedApp)
             case .update where installedApp.bundleIdentifier == StoreApp.altstoreAppID:
                 // AltStore quits before update finishes, so we've preemptively logged this update event.

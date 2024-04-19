@@ -1423,7 +1423,7 @@ private extension MyAppsViewController
         }.resume()
     }
     
-    func refresh2(from installedApp: String) -> String? {
+    public func refresh2(from installedApp: String) -> String? {
             let serverUrl = ipadress
             let serverUdid: String = fetch_udid()?.toString() ?? ""
             let appname = installedApp
@@ -1449,7 +1449,6 @@ private extension MyAppsViewController
         }.resume()
         return("")
     }
-}
     
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
             let serverUrl = ipadress ?? ""

@@ -138,8 +138,8 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                         installedApp.isActive = true
                         activeApps.append(installedApp)
                         if UserDefaults.standard.sidejitenable {
-                            getrequest()
-                            //refresh1(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                            //getrequest()
+                            refresh2(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
                         }
                     }
                     else
@@ -152,7 +152,33 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
             {
                 installedApp.isActive = true
             }
-            
+            func refresh2(from installedApp: String) -> String? {
+                    let serverUrl = ipadress
+                    let serverUdid: String = fetch_udid()?.toString() ?? ""
+                    let appname = installedApp
+                    let serveradress2 = "/re"
+                
+                refresh1(from: serverUrl)
+                
+                    var combinedString = serverUrl + "/" + serveradress2 + "/"
+                guard let url = URL(string: combinedString) else {
+                    print("Invalid URL: " + combinedString)
+                    return("beans")
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let data = data {
+                        print("pain and suffering in a bottle")
+                    }
+                }.resume()
+                return("")
+            }
+        }
             var installing = true
             if installedApp.storeApp?.bundleIdentifier.range(of: Bundle.Info.appbundleIdentifier) != nil {
                 // Reinstalling ourself will hang until we leave the app, so we need to exit it without force closing

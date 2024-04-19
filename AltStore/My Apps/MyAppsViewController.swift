@@ -1356,7 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest2()
+                    sendGetRequest()
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
@@ -1398,25 +1398,23 @@ private extension MyAppsViewController
         return nil
     }
     
-    func getrequest2() {
-            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
-        
-            var combinedString = "\(serverUrl)" + "/re/"
-            guard let url = URL(string: combinedString) else {
-                print("Invalid URL: " + combinedString)
-                return
-            }
-        
-            URLSession.shared.dataTask(with: url) { data, _, error in
-                if let error = error {
-                    print("Error fetching data: \(error.localizedDescription)")
-                    return
-                }
-      
-                if let data = data {
-                    print(data)
+    func sendGetRequest() {
+        let combinedString2 = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+
+        guard let url = URL(string: combinedString2) else {
+            print("Invalid URL")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("Error: \(error)")
+            } else {
+                // Do nothing with data or response
             }
         }
+
+        task.resume()
     }
     
     

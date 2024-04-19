@@ -1405,13 +1405,24 @@ private extension MyAppsViewController
         
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
+            var combinedString2 = "\(serverUrl)" + "/re/"
         guard let url = URL(string: combinedString) else {
             print("Invalid URL: " + combinedString)
             let toastView = ToastView(error: OperationError.tooNewError)
             toastView.show(in: self)
             return("beans")
         }
-        
+        guard let url2 = URL(string: combinedString2) else {
+            print("Invalid URL: " + combinedString)
+            let toastView = ToastView(error: OperationError.tooNewError)
+            toastView.show(in: self)
+            return("beans")
+        }
+        URLSession.shared.dataTask(with: url2) { data1, _, error in
+            if let error = error {
+                print("Error fetching data: \(error.localizedDescription)")
+                return
+            }
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")

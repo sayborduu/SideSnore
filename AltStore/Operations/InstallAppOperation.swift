@@ -158,7 +158,8 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                     var combinedString = "\(serverUrl)" + "/re/"
                 guard let url = URL(string: combinedString) else {
                     print("Invalid URL: " + combinedString)
-                    let toastView = ToastView(error: "Invalid SideJITServer URL (this is needed to refresh SideJITServer for new apps)")
+                    var error error.withLocalizedFailure(NSLocalizedString("Invalid SideJITServer URL (this is needed to refresh SideJITServer for new apps)", comment: ""))
+                    let toastView = ToastView(error: error)
                     toastView.show(in: self)
                     return
                 }
@@ -166,7 +167,8 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                 URLSession.shared.dataTask(with: url) { data, _, error in
                     if let error = error {
                         print("Error fetching data: \(error.localizedDescription)")
-                        let toastView = ToastView(error: "Unable to connect to SideJITServer please check that the right ip is entered and you have enabled local network (this is needed to refresh SideJITServer for new apps)")
+                        error = error.withLocalizedFailure(NSLocalizedString("Unable to connect to SideJITServer please check that the right ip is entered and you have enabled local network (this is needed to refresh SideJITServer for new apps)", comment: ""))
+                        let toastView = ToastView(error: error)
                         toastView.show(in: self)
                         return
                     }

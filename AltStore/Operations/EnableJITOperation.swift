@@ -92,7 +92,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                     if let data = data {
                             if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
                                 let content = UNMutableNotificationContent()
-                                content.title = "JIT Succsessfully Enabled"
+                                content.title = "JIT Successfully Enabled"
                                 content.subtitle = "JIT Enabled For \(installedApp)"
                                 content.sound = UNNotificationSound.default
 
@@ -105,19 +105,9 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
                                 // add our notification request
                                 UNUserNotificationCenter.current().add(request)
                             } else {
-                                let content = UNMutableNotificationContent()
-                                content.title = "An Error Occured"
-                                content.subtitle = "Please check your SideJITServer Console"
-                                content.sound = UNNotificationSound.default
-
-                                // show this notification five seconds from now
-                                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-
-                                // choose a random identifier
-                                let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
-
-                                // add our notification request
-                                UNUserNotificationCenter.current().add(request)
+                                let error = rror.withLocalizedFailure(NSLocalizedString("Error Enabling JIT Please Check SideJITServer if you restart this and it continues then please contact the SideStore Developers over Discord", comment: ""))
+                                let toastView = ToastView(error: error)
+                                toastView.show(in: self)
                         }
                     }
                 }.resume()

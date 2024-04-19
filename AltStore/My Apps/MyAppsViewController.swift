@@ -1398,25 +1398,30 @@ private extension MyAppsViewController
         return nil
     }
     
-    func getrequest2() {
-            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+    func getrequest() {
+        let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
+        var combinedString = serverUrl + "/re/"
+        guard let url = URL(string: combinedString2) else {
+            print("Invalid URL")
+            return
+        }
         
-            var combinedString = "\(serverUrl)" + "/re/"
-            guard let url = URL(string: combinedString) else {
-                print("Invalid URL: " + combinedString)
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                print("Error fetching data: \(error.localizedDescription)")
                 return
             }
-        
-            URLSession.shared.dataTask(with: url) { data, _, error in
-                if let error = error {
-                    print("Error fetching data: \(error.localizedDescription)")
-                    return
+            
+            if let data = data {
+                print(String(data: data, encoding: .utf8) ?? "Invalid data")
+                do {
+                    let decodedData = try JSONDecoder().decode([Item].self, from: data)
+                    print(decodedData)
+                } catch {
+                    print("Error decoding data: \(error.localizedDescription)")
                 }
-      
-                if let data = data {
-                    print(data)
             }
-        }
+        }.resume()
     }
     
     

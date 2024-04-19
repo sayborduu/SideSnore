@@ -1399,7 +1399,8 @@ private extension MyAppsViewController
     }
     
     func sendGetRequest() {
-        let combinedString2 = UserDefaults.standard.textInputSideJITServerurl ?? "" + "/re/" // replace with your URL
+        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+        let combinedString2 = SJSURL + "/re/"
 
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")

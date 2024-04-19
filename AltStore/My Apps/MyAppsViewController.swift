@@ -1407,12 +1407,16 @@ private extension MyAppsViewController
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {
             print("Invalid URL: " + combinedString)
+            let toastView = ToastView(error: "Invalid URL")
+            toastView.show(in: self)
             return("beans")
         }
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
+                let toastView = ToastView(error: "Unable to connect to SideJITServer please check that the right ip is entered and you have enabled local network")
+                toastView.show(in: self)
                 return
             }
             

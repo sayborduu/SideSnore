@@ -169,7 +169,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                     
                     if let data = data {
                         print(data)
-                }.resume()
+                }
             }
         }
 

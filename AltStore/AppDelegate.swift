@@ -103,8 +103,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             print(data)
         }
         task.resume()
-
-        return true
     }
     
     func applicationDidEnterBackground(_ application: UIApplication)

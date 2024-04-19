@@ -129,6 +129,7 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                 if !activeApps.contains(installedApp)
                 {
                     let activeAppsCount = activeApps.map { $0.requiredActiveSlots }.reduce(0, +)
+                    let sideJITenabled = UserDefaults.standard.sidejitenable
                     
                     let availableActiveApps = max(sideloadedAppsLimit - activeAppsCount, 0)
                     if installedApp.requiredActiveSlots <= availableActiveApps
@@ -137,6 +138,9 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                         // so implicitly activate it.
                         installedApp.isActive = true
                         activeApps.append(installedApp)
+                        if sideJITenabled {
+                            getrequest()
+                        }
                     }
                     else
                     {
@@ -148,6 +152,31 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
             {
                 installedApp.isActive = true
             }
+
+            func getrequest() {
+                if sideJITenabled {
+                    let serverUrl = "\(UserDefaults.standard.textInputSideJITServerurl)"
+                
+                    var combinedString = "\(serverUrl)" + "/re/"
+                guard let url = URL(string: combinedString) else {
+                    print("Invalid URL: " + combinedString)
+                    return("beans")
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let data = data {
+                        print(data)
+                    }
+                }.resume()
+                return("")
+            }
+        }
+
             
             var installing = true
             if installedApp.storeApp?.bundleIdentifier.range(of: Bundle.Info.appbundleIdentifier) != nil {

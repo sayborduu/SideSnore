@@ -153,7 +153,6 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
             }
 
             func getrequest() {
-                if sideJITenabled {
                     let serverUrl = "\(UserDefaults.standard.textInputSideJITServerurl)"
                 
                     var combinedString = "\(serverUrl)" + "/re/"
@@ -170,7 +169,6 @@ final class InstallAppOperation: ResultOperation<InstalledApp>
                     
                     if let data = data {
                         print(data)
-                    }
                 }.resume()
             }
         }

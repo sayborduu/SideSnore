@@ -896,7 +896,23 @@ private extension MyAppsViewController
                     app.managedObjectContext?.perform {
                         print("Successfully installed app:", app.bundleIdentifier)
                     }
-                    
+                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+                    let combinedString2 = SJSURL + "/re/"
+
+                    guard let url = URL(string: combinedString2) else {
+                        print("Invalid URL")
+                        return
+                    }
+
+                    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                        if let error = error {
+                            print("Error: \(error)")
+                        } else {
+                            // Do nothing with data or response
+                        }
+                    }
+
+                    task.resume()
                 case .failure(OperationError.cancelled):
                     completion(.failure((OperationError.cancelled)))
                     
@@ -918,6 +934,25 @@ private extension MyAppsViewController
         
         let operations = [downloadOperation, unzipAppOperation, removeAppExtensionsOperation, installAppOperation].compactMap { $0 }
         self.operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+    public func sendGetRequest2() {
+        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
+        let combinedString2 = SJSURL + "/re/"
+
+        guard let url = URL(string: combinedString2) else {
+            print("Invalid URL")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("Error: \(error)")
+            } else {
+                // Do nothing with data or response
+            }
+        }
+
+        task.resume()
     }
     
     @IBAction func activateApp(_ sender: UIButton)
@@ -1356,7 +1391,6 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    sendGetRequest()
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return

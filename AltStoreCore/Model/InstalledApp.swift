@@ -105,6 +105,8 @@ public class InstalledApp: NSManagedObject, InstalledAppProtocol
         self.update(resignedApp: resignedApp, certificateSerialNumber: certificateSerialNumber)
     }
     
+    
+    
     public func update(resignedApp: ALTApplication, certificateSerialNumber: String?)
     {
         self.name = resignedApp.name

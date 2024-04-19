@@ -1356,7 +1356,7 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    refresh1(from: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    getrequest2()
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
@@ -1398,57 +1398,27 @@ private extension MyAppsViewController
         return nil
     }
     
-    public func refresh1(from installedApp: String) -> String? {
-        let combinedString2 = installedApp + "/re/"
-        guard let url = URL(string: combinedString2) else {
-            print("Invalid URL")
-            return
-        }
+    func getrequest2() {
+            let serverUrl = UserDefaults.standard.textInputSideJITServerurl ?? ""
         
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
+            var combinedString = "\(serverUrl)" + "/re/"
+            guard let url = URL(string: combinedString) else {
+                print("Invalid URL: " + combinedString)
                 return
             }
-            
-            if let data = data {
-                print(String(data: data, encoding: .utf8) ?? "Invalid data")
-                do {
-                    let decodedData = try JSONDecoder().decode([Item].self, from: data)
-                    print(decodedData)
-                } catch {
-                    print("Error decoding data: \(error.localizedDescription)")
+        
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                if let error = error {
+                    print("Error fetching data: \(error.localizedDescription)")
+                    return
                 }
+      
+                if let data = data {
+                    print(data)
             }
-        }.resume()
+        }
     }
     
-    public func refresh2(from installedApp: String) -> String? {
-            let serverUrl = ipadress
-            let serverUdid: String = fetch_udid()?.toString() ?? ""
-            let appname = installedApp
-            let serveradress2 = "/re"
-        
-        refresh1(from: serverUrl)
-        
-            var combinedString = serverUrl + "/" + serveradress2 + "/"
-        guard let url = URL(string: combinedString) else {
-            print("Invalid URL: " + combinedString)
-            return("beans")
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                return
-            }
-            
-            if let data = data {
-                print("pain and suffering in a bottle")
-            }
-        }.resume()
-        return("")
-    }
     
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
             let serverUrl = ipadress ?? ""
@@ -1456,7 +1426,6 @@ private extension MyAppsViewController
             let appname = installedApp
             let serveradress2 = serverUdid + "/" + appname
         
-        refresh2(from: serverUrl)
         
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {

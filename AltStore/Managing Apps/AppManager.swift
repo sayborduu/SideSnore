@@ -13,10 +13,16 @@ import MobileCoreServices
 import Intents
 import Combine
 import WidgetKit
+import MobileCoreServices
+import UniformTypeIdentifiers
+import Foundation
 
 import AltStoreCore
 import AltSign
 import Roxas
+import minimuxer
+
+import Nuke
 
 extension AppManager
 {

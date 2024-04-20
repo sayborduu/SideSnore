@@ -1309,8 +1309,9 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): restoreContext.installedApp = installedApp
-                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
-                        let combinedString2 = SJSURL + "/re/"
+                        let serverUdid: String = fetch_udid()?.toString() ?? ""
+                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                        let combinedString2 = SJSURL + serverUdid + "/re/"
 
                         guard let url = URL(string: combinedString2) else {
                             print("Invalid URL")
@@ -1360,8 +1361,9 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): appContext.installedApp = installedApp
-                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
-                        let combinedString2 = SJSURL + "/re/"
+                        let serverUdid: String = fetch_udid()?.toString() ?? ""
+                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                        let combinedString2 = SJSURL + serverUdid + "/re/"
 
                         guard let url = URL(string: combinedString2) else {
                             print("Invalid URL")

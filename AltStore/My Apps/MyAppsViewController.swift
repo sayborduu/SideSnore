@@ -896,8 +896,9 @@ private extension MyAppsViewController
                     app.managedObjectContext?.perform {
                         print("Successfully installed app:", app.bundleIdentifier)
                     }
-                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
-                    let combinedString2 = SJSURL + "/re/"
+                    let serverUdid: String = fetch_udid()?.toString() ?? ""
+                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                    let combinedString2 = SJSURL + serverUdid + "/re/"
 
                     guard let url = URL(string: combinedString2) else {
                         print("Invalid URL")
@@ -936,8 +937,9 @@ private extension MyAppsViewController
         self.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
     public func sendGetRequest2() {
-        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
-        let combinedString2 = SJSURL + "/re/"
+        let serverUdid: String = fetch_udid()?.toString() ?? ""
+        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+        let combinedString2 = SJSURL + serverUdid + "/re/"
 
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")
@@ -1433,8 +1435,9 @@ private extension MyAppsViewController
     }
     
     func sendGetRequest() {
-        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? "" // replace with your URL
-        let combinedString2 = SJSURL + "/re/"
+        let serverUdid: String = fetch_udid()?.toString() ?? ""
+        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+        let combinedString2 = SJSURL + serverUdid + "/re/"
 
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")

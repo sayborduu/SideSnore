@@ -685,19 +685,74 @@ extension AppManager
         {
             var installedApp: InstalledApp?
         }
-        
-        let context = Context()
-        context.installedApp = installedApp
-        
-        
-        let enableJITOperation = EnableJITOperation(context: context)
-        enableJITOperation.resultHandler = { (result) in
-            completionHandler(result)
+        if #available(iOS 17, *) {
+            getrequest(from: installedApp, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+            func getrequest(from installedApp: String, IP ipadress: String) -> String? {
+                let serverUrl = ipadress ?? ""
+                let serverUdid: String = fetch_udid()?.toString() ?? ""
+                let appname = installedApp
+                let serveradress2 = serverUdid + "/" + appname
+                
+                
+                var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
+                guard let url = URL(string: combinedString) else {
+                    print("Invalid URL: " + combinedString)
+                    return("beans")
+                }
+                
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let data = data {
+                        if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
+                            let content = UNMutableNotificationContent()
+                            content.title = "JIT Successfully Enabled"
+                            content.subtitle = "JIT Enabled For \(installedApp)"
+                            content.sound = UNNotificationSound.default
+                            
+                            // show this notification five seconds from now
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                            
+                            // choose a random identifier
+                            let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
+                            
+                            // add our notification request
+                            UNUserNotificationCenter.current().add(request)
+                        } else {
+                            let content = UNMutableNotificationContent()
+                            content.title = "An Error Occured"
+                            content.subtitle = "Please check your SideJITServer Console"
+                            content.sound = UNNotificationSound.default
+                            
+                            // show this notification five seconds from now
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                            
+                            // choose a random identifier
+                            let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
+                            
+                            // add our notification request
+                            UNUserNotificationCenter.current().add(request)
+                        }
+                    }
+                }.resume()
+                return("")
+            }
+        } else {
+            let context = Context()
+            context.installedApp = installedApp
+            
+            
+            let enableJITOperation = EnableJITOperation(context: context)
+            enableJITOperation.resultHandler = { (result) in
+                completionHandler(result)
+            }
+            
+            self.run([enableJITOperation], context: context, requiresSerialQueue: true)
         }
-        
-        self.run([enableJITOperation], context: context, requiresSerialQueue: true)
     }
-    
     @available(iOS 14.0, *)
     func patch(resignedApp: ALTApplication, presentingViewController: UIViewController, context authContext: AuthenticatedOperationContext, completionHandler: @escaping (Result<InstalledApp, Error>) -> Void) -> PatchAppOperation
     {
@@ -1315,6 +1370,7 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): restoreContext.installedApp = installedApp
+                        /*
                         let serverUdid: String = fetch_udid()?.toString() ?? ""
                         let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
                         let combinedString2 = SJSURL + serverUdid + "/re/"
@@ -1333,6 +1389,7 @@ private extension AppManager
                         }
 
                         task.resume()
+                         */
                     case .failure(let error):
                         restoreContext.error = error
                         appContext.error = error
@@ -1367,22 +1424,22 @@ private extension AppManager
                     switch result
                     {
                     case .success(let installedApp): appContext.installedApp = installedApp
-                        let serverUdid: String = fetch_udid()?.toString() ?? ""
-                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
-                        let combinedString2 = SJSURL + serverUdid + "/re/"
+                        // let serverUdid: String = fetch_udid()?.toString() ?? ""
+                        // let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                        //let combinedString2 = SJSURL + serverUdid + "/re/"
 
-                        guard let url = URL(string: combinedString2) else {
-                            print("Invalid URL")
-                            return
-                        }
+                        // guard let url = URL(string: combinedString2) else {
+                            // print("Invalid URL")
+                            // return
+                        // }
 
-                        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-                            if let error = error {
-                                print("Error: \(error)")
-                            } else {
+                        // let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                            // if let error = error {
+                                // print("Error: \(error)")
+                            // } else {
                                 // Do nothing with data or response
-                            }
-                        }
+                            // }
+                        // }
 
                         task.resume()
                     case .failure(let error): appContext.error = error

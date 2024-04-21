@@ -685,9 +685,10 @@ extension AppManager
             {
                 var installedApp: InstalledApp?
             }
+        
             if #available(iOS 17, *) {
                 getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-            }
+            } else {
             
             let context = Context()
             context.installedApp = installedApp

@@ -680,24 +680,26 @@ extension AppManager
     @available(iOS 14, *)
     func enableJIT(for installedApp: InstalledApp, completionHandler: @escaping (Result<Void, Error>) -> Void)
     {
-        final class Context: OperationContext, EnableJITContext
-        {
-            var installedApp: InstalledApp?
+        
+            final class Context: OperationContext, EnableJITContext
+            {
+                var installedApp: InstalledApp?
+            }
+            if #available(iOS 17, *) {
+                getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+            }
+            
+            let context = Context()
+            context.installedApp = installedApp
+            
+            
+            let enableJITOperation = EnableJITOperation(context: context)
+            enableJITOperation.resultHandler = { (result) in
+                completionHandler(result)
+            }
+            
+            self.run([enableJITOperation], context: context, requiresSerialQueue: true)
         }
-        if #available(iOS 17, *) {
-            getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-        }
-        
-        let context = Context()
-        context.installedApp = installedApp
-        
-        
-        let enableJITOperation = EnableJITOperation(context: context)
-        enableJITOperation.resultHandler = { (result) in
-            completionHandler(result)
-        }
-        
-        self.run([enableJITOperation], context: context, requiresSerialQueue: true)
     }
     
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {

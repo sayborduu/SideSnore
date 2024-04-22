@@ -687,7 +687,9 @@ extension AppManager
             }
         
             if #available(iOS 17, *) {
-                getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                if UserDefaults.standard.sidejitenable {
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                }
             } else {
             
             let context = Context()
@@ -809,6 +811,11 @@ extension AppManager
             {
             case .failure(let error): completionHandler(.failure(error))
             case .success(let installedApp): completionHandler(.success(installedApp))
+                if #available(iOS 17, *) {
+                    if UserDefaults.standard.sidejitenable {
+                        sendGetRequest2()
+                    }
+                }
             }
         }
         installOperation.addDependency(sendAppOperation)
@@ -816,7 +823,26 @@ extension AppManager
         self.run([patchAppOperation, sendAppOperation, installOperation], context: context.authenticatedContext)
         return patchAppOperation
     }
-    
+    func sendGetRequest2() {
+        let serverUdid: String = fetch_udid()?.toString() ?? ""
+        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+        let combinedString2 = SJSURL + serverUdid + "/re/"
+
+        guard let url = URL(string: combinedString2) else {
+            print("Invalid URL")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("Error: \(error)")
+            } else {
+                // Do nothing with data or response
+            }
+        }
+
+        task.resume()
+    }
     func installationProgress(for app: AppProtocol) -> Progress?
     {
         let progress = self.installationProgress[app.bundleIdentifier]

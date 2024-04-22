@@ -56,9 +56,9 @@ extension SettingsViewController
         case errorLog
         case clearCache
         case resetPairingFile
+        case refreshSideJITServer
         case resetAdiPb
         case advancedSettings
-    
     }
 }
 
@@ -74,6 +74,8 @@ final class SettingsViewController: UITableViewController
     @IBOutlet private var accountNameLabel: UILabel!
     @IBOutlet private var accountEmailLabel: UILabel!
     @IBOutlet private var accountTypeLabel: UILabel!
+    
+    @IBOutlet private var SideJITServer: UILabel!
     
     @IBOutlet private var backgroundRefreshSwitch: UISwitch!
     @IBOutlet private var noIdleTimeoutSwitch: UISwitch!
@@ -525,6 +527,7 @@ extension SettingsViewController
                 self.addRefreshAppsShortcut()
             }
             
+        
             
         case .credits:
             let row = CreditsRow.allCases[indexPath.row]
@@ -565,7 +568,28 @@ extension SettingsViewController
                 }
                 
             case .clearCache: self.clearCache()
+                
+            case .refreshSideJITServer
+                sendGetRequest2()
+                func sendGetRequest2() {
+                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                    let combinedString2 = SJSURL + "/re/"
 
+                    guard let url = URL(string: combinedString2) else {
+                        print("Invalid URL")
+                        return
+                    }
+
+                    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                        if let error = error {
+                            print("Error: \(error)")
+                        } else {
+                            // Do nothing with data or response
+                        }
+                    }
+
+                    task.resume()
+                }
             case .resetPairingFile:
                 let filename = "ALTPairingFile.mobiledevicepairing"
                 let fm = FileManager.default

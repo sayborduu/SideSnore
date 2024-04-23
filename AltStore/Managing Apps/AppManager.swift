@@ -813,7 +813,7 @@ extension AppManager
             case .success(let installedApp): completionHandler(.success(installedApp))
                 if #available(iOS 17, *) {
                     if UserDefaults.standard.sidejitenable {
-                        sendGetRequest2()
+                        self.sendGetRequest2()
                     }
                 }
             }

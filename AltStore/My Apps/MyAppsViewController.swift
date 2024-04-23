@@ -22,6 +22,53 @@ import Nuke
 
 private let maximumCollapsedUpdatesCount = 2
 
+class BonjourClient: NSObject, NetServiceDelegate {
+    var service: NetService
+    var resolvedIP: String?
+    var completionHandler: ((String?) -> Void)?
+
+    init(domain: String, type: String, name: String, completionHandler: @escaping (String?) -> Void) {
+        self.service = NetService(domain: domain, type: type, name: name)
+        self.completionHandler = completionHandler
+        super.init()
+        self.service.delegate = self
+    }
+
+    func startResolving() {
+        DispatchQueue.global(qos: .background).async {
+            self.service.resolve(withTimeout: 5.0)
+            RunLoop.current.run()
+        }
+    }
+
+    func netServiceDidResolveAddress(_ sender: NetService) {
+        guard let addressData = sender.addresses?.first else { return }
+        var inetAddress : sockaddr_in?
+
+        // Only handling IPv4:
+        addressData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) -> Void in
+            inetAddress = pointer.load(as: sockaddr_in.self)
+        }
+
+        if let inetAddress = inetAddress {
+            let ip4 = String(cString: inet_ntoa(inetAddress.sin_addr), encoding: .ascii)!
+            print("IPv4: \(ip4)")
+            self.resolvedIP = ip4
+            DispatchQueue.main.async {
+                self.completionHandler?(self.resolvedIP)
+            }
+        }
+    }
+
+    func netService(_ sender: NetService, didNotResolve errorDict: [String : NSNumber]) {
+        print("Did not resolve: \(errorDict)")
+        DispatchQueue.main.async {
+            self.completionHandler?(nil)
+        }
+    }
+}
+
+
 extension MyAppsViewController
 {
     private enum Section: Int, CaseIterable
@@ -495,7 +542,7 @@ private extension MyAppsViewController
             UIView.performWithoutAnimation {
                 self.collectionView.reloadSections(IndexSet(integer: Section.updates.rawValue))
             }
-        }        
+        }
     }
     
     func fetchAppIDs()
@@ -1051,35 +1098,6 @@ private extension MyAppsViewController
     }
 }
 
-class BonjourClient: NSObject, NetServiceBrowserDelegate, NetServiceDelegate {
-    var browser: NetServiceBrowser?
-    var service: NetService?
-    var serviceResolved: ((String, Int32) -> Void)?
-
-    func startBrowsing() {
-        browser = NetServiceBrowser()
-        browser?.delegate = self
-        browser?.searchForServices(ofType: "_http._tcp.", inDomain: "local.")
-    }
-
-    func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
-        if service.name == "SideJITServer" {
-            self.service = service
-            self.service?.delegate = self
-            self.service?.resolve(withTimeout: 5.0)
-        }
-    }
-
-    func netServiceDidResolveAddress(_ sender: NetService) {
-        guard let addressData = sender.addresses?.first else { return }
-        var hostname = CChar)
-        let sockaddrPtr = addressData.withUnsafeBytes { $0.baseAddress?.assumingMemoryBound(to: sockaddr.self) }
-        getnameinfo(sockaddrPtr, socklen_t(addressData.count), &hostname, socklen_t(hostname.count), nil, 0, NI_NUMERICHOST)
-        guard let ipAddress = String(validatingUTF8: hostname) else { return }
-        serviceResolved?(ipAddress, sender.port)
-    }
-}
-
 private extension MyAppsViewController
 {
     func open(_ installedApp: InstalledApp)
@@ -1425,13 +1443,15 @@ private extension MyAppsViewController
             let sideJITenabled = UserDefaults.standard.sidejitenable
             if sideJITenabled {
                 if UserDefaults.standard.textInputSideJITServerurl ?? "" = "" {
-                    // Usage:
-                    let client = BonjourClient()
-                    client.serviceResolved = { ipAddress, port in
-                        print("Service resolved at \(ipAddress):\(port)")
-                        getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
+                    let client = BonjourClient(domain: "local.", type: "_http._tcp.", name: "SideJITServer") { ipAddress in
+                        if let ipAddress = ipAddress {
+                            print("Resolved IP: \(ipAddress)")
+                            getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
+                        } else {
+                            print("Failed to resolve IP")
+                        }
                     }
-                    client.startBrowsing()
+                    client.startResolving()
                 } else {
                     if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                         print("\(bundleIdentifier)")
@@ -2338,3 +2358,4 @@ extension MyAppsViewController: UIImagePickerControllerDelegate, UINavigationCon
         self._imagePickerInstalledApp = nil
     }
 }
+

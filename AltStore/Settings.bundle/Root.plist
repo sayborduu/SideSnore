@@ -89,35 +89,12 @@
 			<false/>
 			<key>FooterText</key>
 			<string>chicken</string>
-			<key>TrueValue</key>
-			<dict>
-				<key>Type</key>
-				<string>PSTextFieldSpecifier</string>
-				<key>Title</key>
-				<string>SideJITServer IP</string>
-				<key>Key</key>
-				<string>textInputSideJITServerurl</string>
-				<key>AutocapitalizationType</key>
-				<string>None</string>
-				<key>AutocorrectionType</key>
-				<string>No</string>
-				<key>KeyboardType</key>
-				<string>URL</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>Deprecated</string>
-			<key>FooterText</key>
-			<string>If you have an old version of SideJITServer Please Put your SideJITServer Address</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>SideJITServer URL</string>
+			<string>SideJITServer IP</string>
 			<key>Key</key>
 			<string>textInputSideJITServerurl</string>
 			<key>AutocapitalizationType</key>

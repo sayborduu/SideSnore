@@ -22,53 +22,6 @@ import Nuke
 
 private let maximumCollapsedUpdatesCount = 2
 
-class BonjourClient: NSObject, NetServiceDelegate {
-    var service: NetService
-    var resolvedIP: String?
-    var completionHandler: ((String?) -> Void)?
-
-    init(domain: String, type: String, name: String, completionHandler: @escaping (String?) -> Void) {
-        self.service = NetService(domain: domain, type: type, name: name)
-        self.completionHandler = completionHandler
-        super.init()
-        self.service.delegate = self
-    }
-
-    func startResolving() {
-        DispatchQueue.global(qos: .background).async {
-            self.service.resolve(withTimeout: 5.0)
-            RunLoop.current.run()
-        }
-    }
-
-    func netServiceDidResolveAddress(_ sender: NetService) {
-        guard let addressData = sender.addresses?.first else { return }
-        var inetAddress : sockaddr_in?
-
-        // Only handling IPv4:
-        addressData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) -> Void in
-            inetAddress = pointer.load(as: sockaddr_in.self)
-        }
-
-        if let inetAddress = inetAddress {
-            let ip4 = String(cString: inet_ntoa(inetAddress.sin_addr), encoding: .ascii)!
-            print("IPv4: \(ip4)")
-            self.resolvedIP = ip4
-            DispatchQueue.main.async {
-                self.completionHandler?(self.resolvedIP)
-            }
-        }
-    }
-
-    func netService(_ sender: NetService, didNotResolve errorDict: [String : NSNumber]) {
-        print("Did not resolve: \(errorDict)")
-        DispatchQueue.main.async {
-            self.completionHandler?(nil)
-        }
-    }
-}
-
-
 extension MyAppsViewController
 {
     private enum Section: Int, CaseIterable
@@ -542,7 +495,7 @@ private extension MyAppsViewController
             UIView.performWithoutAnimation {
                 self.collectionView.reloadSections(IndexSet(integer: Section.updates.rawValue))
             }
-        }
+        }        
     }
     
     func fetchAppIDs()
@@ -945,14 +898,9 @@ private extension MyAppsViewController
                     }
                     if #available(iOS 17, *) {
                         let sideJITenabled = UserDefaults.standard.sidejitenable
-                        var SJSURL = ""
                         if sideJITenabled {
-                            if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                                SJSURL = "http://sidejitserver._http._tcp.local:8080"
-                            } else {
-                                SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                            }
                             let serverUdid: String = fetch_udid()?.toString() ?? ""
+                            let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
                             let combinedString2 = SJSURL + serverUdid + "/re/"
                             
                             guard let url = URL(string: combinedString2) else {
@@ -1446,14 +1394,10 @@ private extension MyAppsViewController
     {
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
-            if UserDefaults.standard.sidejitenable {
-                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
-                } else {
-                    if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
-                        print("\(bundleIdentifier)")
-                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                    }
+            if sideJITenabled {
+                if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
+                    print("\(bundleIdentifier)")
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
             } else {
@@ -1461,21 +1405,20 @@ private extension MyAppsViewController
                 toastView.show(in: self)
                 print("beans")
             }
-        } else {
+        }
         if !minimuxer.ready() {
             let toastView = ToastView(error: MinimuxerError.NoConnection)
             toastView.show(in: self)
             return
         }
-            AppManager.shared.enableJIT(for: installedApp) { result in
-                DispatchQueue.main.async {
-                    switch result
-                    {
-                    case .success: break
-                    case .failure(let error):
-                        let toastView = ToastView(error: error)
-                        toastView.show(in: self.navigationController?.view ?? self.view, duration: 5)
-                    }
+        AppManager.shared.enableJIT(for: installedApp) { result in
+            DispatchQueue.main.async {
+                switch result
+                {
+                case .success: break
+                case .failure(let error):
+                    let toastView = ToastView(error: error)
+                    toastView.show(in: self.navigationController?.view ?? self.view, duration: 5)
                 }
             }
         }
@@ -2356,4 +2299,3 @@ extension MyAppsViewController: UIImagePickerControllerDelegate, UINavigationCon
         self._imagePickerInstalledApp = nil
     }
 }
-

@@ -45,14 +45,10 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
         guard let installedApp = self.context.installedApp else { return self.finish(.failure(OperationError.invalidParameters)) }
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
-            if UserDefaults.standard.sidejitenable {
-                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
-                } else {
-                    if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
-                        print("\(bundleIdentifier)")
-                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                    }
+            if sideJITenabled {
+                if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
+                    print("\(bundleIdentifier)")
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
                 }
                 return
             } else {

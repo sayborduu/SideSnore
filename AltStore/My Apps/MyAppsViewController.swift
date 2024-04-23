@@ -945,11 +945,12 @@ private extension MyAppsViewController
                     }
                     if #available(iOS 17, *) {
                         let sideJITenabled = UserDefaults.standard.sidejitenable
+                        var SJSURL = ""
                         if sideJITenabled {
                             if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                                let SJSURL = "http://sidejitserver._http._tcp.local:8080"
+                                SJSURL = "http://sidejitserver._http._tcp.local:8080"
                             } else {
-                                let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                                SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
                             }
                             let serverUdid: String = fetch_udid()?.toString() ?? ""
                             let combinedString2 = SJSURL + serverUdid + "/re/"

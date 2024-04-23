@@ -570,23 +570,42 @@ extension SettingsViewController
             case .clearCache: self.clearCache()
                 //beans
             case .refreshSideJITServer:
-                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
-                    let combinedString2 = SJSURL + "/re/"
+                let alertController = UIAlertController(
+                    title: NSLocalizedString("Are you sure to Refresh SideJITServer?", comment: ""),
+                    message: NSLocalizedString("if you do not have SideJITServer setup this will do nothing", comment: ""),
+                    preferredStyle: UIAlertController.Style.actionSheet)
+                
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("Refresh", comment: ""), style: .destructive){ _ in
+                    if UserDefaults.standard.sidejitenable {
+                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                        let combinedString2 = SJSURL + "/re/"
 
-                    guard let url = URL(string: combinedString2) else {
-                        print("Invalid URL")
-                        return
-                    }
-
-                    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-                        if let error = error {
-                            print("Error: \(error)")
-                        } else {
-                            // Do nothing with data or response
+                        guard let url = URL(string: combinedString2) else {
+                            print("Invalid URL")
+                            return
                         }
-                    }
 
-                    task.resume()
+                        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                            if let error = error {
+                                print("Error: \(error)")
+                            } else {
+                                // Do nothing with data or response
+                            }
+                        }
+
+                        task.resume()
+                    }
+                    self.tableView.deselectRow(at: indexPath, animated: true)
+                    let dialogMessage = UIAlertController(title: NSLocalizedString("Pairing File Reset", comment: ""), message: NSLocalizedString("Please restart SideStore", comment: ""), preferredStyle: .alert)
+                    self.present(dialogMessage, animated: true, completion: nil)
+                })
+                alertController.addAction(.cancel)
+                //Fix crash on iPad
+                alertController.popoverPresentationController?.sourceView = self.tableView
+                alertController.popoverPresentationController?.sourceRect = self.tableView.rectForRow(at: indexPath)
+                self.present(alertController, animated: true)
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            
             case .resetPairingFile:
                 let filename = "ALTPairingFile.mobiledevicepairing"
                 let fm = FileManager.default

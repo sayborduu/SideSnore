@@ -577,7 +577,12 @@ extension SettingsViewController
                 
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("Refresh", comment: ""), style: .destructive){ _ in
                     if UserDefaults.standard.sidejitenable {
-                        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                        var SJSURL = ""
+                        if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                            SJSURL = "http://sidejitserver._http._tcp.local:8080"
+                        } else {
+                            SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                        }  // replace with your URL
                         let combinedString2 = SJSURL + "/re/"
 
                         guard let url = URL(string: combinedString2) else {
@@ -595,9 +600,6 @@ extension SettingsViewController
 
                         task.resume()
                     }
-                    self.tableView.deselectRow(at: indexPath, animated: true)
-                    let dialogMessage = UIAlertController(title: NSLocalizedString("Pairing File Reset", comment: ""), message: NSLocalizedString("Please restart SideStore", comment: ""), preferredStyle: .alert)
-                    self.present(dialogMessage, animated: true, completion: nil)
                 })
                 alertController.addAction(.cancel)
                 //Fix crash on iPad

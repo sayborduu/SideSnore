@@ -900,7 +900,12 @@ private extension MyAppsViewController
                         let sideJITenabled = UserDefaults.standard.sidejitenable
                         if sideJITenabled {
                             let serverUdid: String = fetch_udid()?.toString() ?? ""
-                            let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                            var SJSURL = ""
+                            if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                                SJSURL = "http://sidejitserver._http._tcp.local:8080"
+                            } else {
+                                SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                           }
                             let combinedString2 = SJSURL + serverUdid + "/re/"
                             
                             guard let url = URL(string: combinedString2) else {
@@ -1397,7 +1402,11 @@ private extension MyAppsViewController
             if sideJITenabled {
                 if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                     print("\(bundleIdentifier)")
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080"?? "")
+                    } else {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                   }
                 }
                 return
             } else {
@@ -1461,7 +1470,7 @@ private extension MyAppsViewController
     
     
     func getrequest(from installedApp: String, IP ipadress: String) -> String? {
-            let serverUrl = ipadress ?? ""
+            var serverUrl = ipadress ?? ""
             let serverUdid: String = fetch_udid()?.toString() ?? ""
             let appname = installedApp
             let serveradress2 = serverUdid + "/" + appname

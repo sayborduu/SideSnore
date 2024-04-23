@@ -1051,6 +1051,35 @@ private extension MyAppsViewController
     }
 }
 
+class BonjourClient: NSObject, NetServiceBrowserDelegate, NetServiceDelegate {
+    var browser: NetServiceBrowser?
+    var service: NetService?
+    var serviceResolved: ((String, Int32) -> Void)?
+
+    func startBrowsing() {
+        browser = NetServiceBrowser()
+        browser?.delegate = self
+        browser?.searchForServices(ofType: "_http._tcp.", inDomain: "local.")
+    }
+
+    func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
+        if service.name == "SideJITServer" {
+            self.service = service
+            self.service?.delegate = self
+            self.service?.resolve(withTimeout: 5.0)
+        }
+    }
+
+    func netServiceDidResolveAddress(_ sender: NetService) {
+        guard let addressData = sender.addresses?.first else { return }
+        var hostname = CChar)
+        let sockaddrPtr = addressData.withUnsafeBytes { $0.baseAddress?.assumingMemoryBound(to: sockaddr.self) }
+        getnameinfo(sockaddrPtr, socklen_t(addressData.count), &hostname, socklen_t(hostname.count), nil, 0, NI_NUMERICHOST)
+        guard let ipAddress = String(validatingUTF8: hostname) else { return }
+        serviceResolved?(ipAddress, sender.port)
+    }
+}
+
 private extension MyAppsViewController
 {
     func open(_ installedApp: InstalledApp)
@@ -1395,9 +1424,19 @@ private extension MyAppsViewController
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
             if sideJITenabled {
-                if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
-                    print("\(bundleIdentifier)")
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                if UserDefaults.standard.textInputSideJITServerurl ?? "" = "" {
+                    // Usage:
+                    let client = BonjourClient()
+                    client.serviceResolved = { ipAddress, port in
+                        print("Service resolved at \(ipAddress):\(port)")
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
+                    }
+                    client.startBrowsing()
+                } else {
+                    if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
+                        print("\(bundleIdentifier)")
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    }
                 }
                 return
             } else {

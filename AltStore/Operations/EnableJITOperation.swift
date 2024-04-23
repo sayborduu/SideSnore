@@ -45,7 +45,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
         guard let installedApp = self.context.installedApp else { return self.finish(.failure(OperationError.invalidParameters)) }
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
-            if sideJITenabled {
+            if UserDefaults.standard.sidejitenable {
                 if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
                 } else {

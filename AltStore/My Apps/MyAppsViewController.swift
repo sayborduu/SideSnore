@@ -1446,7 +1446,7 @@ private extension MyAppsViewController
     {
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
-            if sideJITenabled {
+            if UserDefaults.standard.sidejitenable {
                 if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
                     getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
                 } else {
@@ -1461,20 +1461,21 @@ private extension MyAppsViewController
                 toastView.show(in: self)
                 print("beans")
             }
-        }
+        } else {
         if !minimuxer.ready() {
             let toastView = ToastView(error: MinimuxerError.NoConnection)
             toastView.show(in: self)
             return
         }
-        AppManager.shared.enableJIT(for: installedApp) { result in
-            DispatchQueue.main.async {
-                switch result
-                {
-                case .success: break
-                case .failure(let error):
-                    let toastView = ToastView(error: error)
-                    toastView.show(in: self.navigationController?.view ?? self.view, duration: 5)
+            AppManager.shared.enableJIT(for: installedApp) { result in
+                DispatchQueue.main.async {
+                    switch result
+                    {
+                    case .success: break
+                    case .failure(let error):
+                        let toastView = ToastView(error: error)
+                        toastView.show(in: self.navigationController?.view ?? self.view, duration: 5)
+                    }
                 }
             }
         }

@@ -1442,11 +1442,11 @@ private extension MyAppsViewController
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
             if sideJITenabled {
-                if UserDefaults.standard.textInputSideJITServerurl ?? "" = "" {
+                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
                     let client = BonjourClient(domain: "local.", type: "_http._tcp.", name: "SideJITServer") { ipAddress in
                         if let ipAddress = ipAddress {
                             print("Resolved IP: \(ipAddress)")
-                            getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
+                            self.getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
                         } else {
                             print("Failed to resolve IP")
                         }

@@ -568,9 +568,25 @@ extension SettingsViewController
                 }
                 
             case .clearCache: self.clearCache()
-                
+                //beans
             case .refreshSideJITServer
-                self.sendGetRequest2()
+                    let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
+                    let combinedString2 = SJSURL + "/re/"
+
+                    guard let url = URL(string: combinedString2) else {
+                        print("Invalid URL")
+                        return
+                    }
+
+                    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                        if let error = error {
+                            print("Error: \(error)")
+                        } else {
+                            // Do nothing with data or response
+                        }
+                    }
+
+                    task.resume()
             case .resetPairingFile:
                 let filename = "ALTPairingFile.mobiledevicepairing"
                 let fm = FileManager.default
@@ -629,25 +645,6 @@ extension SettingsViewController
             
         default: break
         }
-    }
-    func sendGetRequest2() {
-        let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
-        let combinedString2 = SJSURL + "/re/"
-
-        guard let url = URL(string: combinedString2) else {
-            print("Invalid URL")
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("Error: \(error)")
-            } else {
-                // Do nothing with data or response
-            }
-        }
-
-        task.resume()
     }
 }
 

@@ -569,7 +569,7 @@ extension SettingsViewController
                 
             case .clearCache: self.clearCache()
                 //beans
-            case .refreshSideJITServer
+            case .refreshSideJITServer:
                     let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
                     let combinedString2 = SJSURL + "/re/"
 

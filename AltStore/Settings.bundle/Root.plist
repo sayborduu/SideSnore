@@ -40,6 +40,40 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
+			<string>Danger Zone</string>
+			<key>FooterText</key>
+			<string>If you disable the toggle then app will use the server you input into the &quot;Anisette URL&quot; box rather than one selected from the above selector.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use preferred servers</string>
+			<key>Key</key>
+			<string>textServer</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>FooterText</key>
+			<string>chicken</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Anisette URL</string>
+			<key>Key</key>
+			<string>textInputAnisetteURL</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
 			<string>SideJITServer</string>
 			<key>FooterText</key>
 			<string>If you disable the toggle then the app will not be able to access and use SideJITServer on iOS 17</string>
@@ -75,49 +109,23 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Danger Zone (DO NOT CHANGE ANYTHING HERE IF YOU DONT KNOW WHAT YOUR DOING)</string>
+			<string>Deprecated</string>
 			<key>FooterText</key>
-			<string>If you disable the toggle then app will use the server you input into the &quot;Anisette URL&quot; box rather than one selected from the above selector.</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Use preferred servers</string>
-			<key>Key</key>
-			<string>textServer</string>
-			<key>DefaultValue</key>
-			<true/>
-			<key>FooterText</key>
-			<string>chicken</string>
+			<string>If you have an old version of SideJITServer Please Put your SideJITServer Address</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Anisette URL</string>
-			<key>Key</key>
-			<string>textInputAnisetteURL</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>SideJITServer IP</string>
+			<string>SideJITServer URL</string>
 			<key>Key</key>
 			<string>textInputSideJITServerurl</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
 		</dict>
 	</array>
 </dict>

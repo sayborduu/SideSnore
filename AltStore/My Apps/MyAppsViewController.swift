@@ -946,8 +946,12 @@ private extension MyAppsViewController
                     if #available(iOS 17, *) {
                         let sideJITenabled = UserDefaults.standard.sidejitenable
                         if sideJITenabled {
+                            if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                                let SJSURL = "http://sidejitserver._http._tcp.local:8080"
+                            } else {
+                                let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                            }
                             let serverUdid: String = fetch_udid()?.toString() ?? ""
-                            let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
                             let combinedString2 = SJSURL + serverUdid + "/re/"
                             
                             guard let url = URL(string: combinedString2) else {
@@ -1443,15 +1447,7 @@ private extension MyAppsViewController
             let sideJITenabled = UserDefaults.standard.sidejitenable
             if sideJITenabled {
                 if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                    let client = BonjourClient(domain: "local.", type: "_http._tcp.", name: "SideJITServer") { ipAddress in
-                        if let ipAddress = ipAddress {
-                            print("Resolved IP: \(ipAddress)")
-                            self.getrequest(from: installedApp.resignedBundleIdentifier, IP: ipAddress ?? "")
-                        } else {
-                            print("Failed to resolve IP")
-                        }
-                    }
-                    client.startResolving()
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
                 } else {
                     if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
                         print("\(bundleIdentifier)")

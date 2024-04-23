@@ -71,7 +71,11 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
             }
         
             func getrequest(from installedApp: String, IP ipadress: String) -> String? {
+                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                    let serverUrl = "http://sidejitserver._http._tcp.local:8080"
+                } else {
                     let serverUrl = ipadress ?? ""
+                }
                     let serverUdid: String = fetch_udid()?.toString() ?? ""
                     let appname = installedApp
                     let serveradress2 = serverUdid + "/" + appname

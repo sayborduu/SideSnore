@@ -40,7 +40,42 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Danger Zone</string>
+			<string>SideJITServer</string>
+			<key>FooterText</key>
+			<string>If you disable the toggle then the app will not be able to access and use SideJITServer on iOS 17</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable SideJIT Support</string>
+			<key>Key</key>
+			<string>sidejitenable</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>FooterText</key>
+			<string>chicken</string>
+			<key>TrueValue</key>
+			<dict>
+				<key>Type</key>
+				<string>PSTextFieldSpecifier</string>
+				<key>Title</key>
+				<string>SideJITServer IP</string>
+				<key>Key</key>
+				<string>textInputSideJITServerurl</string>
+				<key>AutocapitalizationType</key>
+				<string>None</string>
+				<key>AutocorrectionType</key>
+				<string>No</string>
+				<key>KeyboardType</key>
+				<string>URL</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Danger Zone (DO NOT CHANGE ANYTHING HERE IF YOU DONT KNOW WHAT YOUR DOING)</string>
 			<key>FooterText</key>
 			<string>If you disable the toggle then app will use the server you input into the &quot;Anisette URL&quot; box rather than one selected from the above selector.</string>
 		</dict>
@@ -72,37 +107,17 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>SideJITServer</string>
-			<key>FooterText</key>
-			<string>If you disable the toggle then the app will not be able to access and use SideJITServer on iOS 17</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Enable SideJIT Support</string>
-			<key>Key</key>
-			<string>sidejitenable</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>FooterText</key>
-			<string>chicken</string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
 			<string>SideJITServer IP</string>
 			<key>Key</key>
 			<string>textInputSideJITServerurl</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
 			<key>KeyboardType</key>
 			<string>URL</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
 		</dict>
 	</array>
 </dict>

@@ -46,9 +46,13 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
         if #available(iOS 17, *) {
             let sideJITenabled = UserDefaults.standard.sidejitenable
             if sideJITenabled {
-                if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
-                    print("\(bundleIdentifier)")
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080" ?? "")
+                } else {
+                    if let bundleIdentifier = (getBundleIdentifier(from: "\(installedApp)")) {
+                        print("\(bundleIdentifier)")
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    }
                 }
                 return
             } else {
@@ -71,12 +75,7 @@ final class EnableJITOperation<Context: EnableJITContext>: ResultOperation<Void>
             }
         
             func getrequest(from installedApp: String, IP ipadress: String) -> String? {
-                var serverurl = ""
-                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                    serverUrl = "http://sidejitserver._http._tcp.local:8080"
-                } else {
-                    serverUrl = ipadress ?? ""
-                }
+                    let serverUrl = ipadress ?? ""
                     let serverUdid: String = fetch_udid()?.toString() ?? ""
                     let appname = installedApp
                     let serveradress2 = serverUdid + "/" + appname

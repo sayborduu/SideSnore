@@ -22,7 +22,6 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
 {
     public func provideAppOptionsCollection(for intent: ViewAppIntent, with completion: @escaping (INObjectCollection<App>?, Error?) -> Void)
     {
-        /*
         DatabaseManager.shared.start { (error) in
             if let error = error
             {
@@ -33,22 +32,17 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
                 let apps = InstalledApp.all(in: context).map { (installedApp) in
                     return App(identifier: installedApp.bundleIdentifier, display: installedApp.name)
                 }
+                if UserDefaults.standard.sidejitenable {
+                    if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
+                    } else {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    }
+                }
                 
                 let collection = INObjectCollection(items: apps)
                 completion(collection, nil)
             }
-        }
-         */
-        DatabaseManager.shared.persistentContainer.performBackgroundTask { (context) in
-            if UserDefaults.standard.sidejitenable {
-                if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
-                } else {
-                    getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                }
-                
-            let collection = INObjectCollection(items: apps)
-            completion(collection, nil)
         }
     }
 }

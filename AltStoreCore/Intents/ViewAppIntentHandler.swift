@@ -67,34 +67,29 @@ func getrequest(from installedApp: String, IP ipadress: String) -> String? {
         }
         
         if let data = data {
-                if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
-                    let content = UNMutableNotificationContent()
-                    content.title = "JIT Successfully Enabled"
-                    content.subtitle = "JIT Enabled For \(installedApp)"
-                    content.sound = UNNotificationSound.default
+            if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
+                let content = UNMutableNotificationContent()
+                content.title = "JIT Successfully Enabled"
+                content.subtitle = "JIT Enabled For \(installedApp)"
+                content.sound = UNNotificationSound.default
 
-                    // show this notification five seconds from now
-                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                // show this notification five seconds from now
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
 
-                    // choose a random identifier
-                    let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
+                // choose a random identifier
+                let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
 
-                    // add our notification request
-                    UNUserNotificationCenter.current().add(request)
-                } else {
-                    let content = UNMutableNotificationContent()
-                    content.title = "An Error Occured"
-                    content.subtitle = "Please check your SideJITServer Console"
-                    content.sound = UNNotificationSound.default
-
-                    // show this notification five seconds from now
-                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-
-                    // choose a random identifier
-                    let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
-
-                    // add our notification request
-                    UNUserNotificationCenter.current().add(request)
+                // add our notification request
+                UNUserNotificationCenter.current().add(request)
+            } else {
+                let dataString = String(data: data, encoding: .utf8)
+                if dataString == "Could not find device!" {
+                    let toastView = ToastView(error: OperationError.unabletoconSideJITDevice)
+                    toastView.show(in: self)
+                } else if dataString?.hasPrefix("Could not find '") {
+                    let toastView = ToastView(error: OperationError.refreshsidejit)
+                    toastView.show(in: self)
+                }
             }
         }
     }.resume()

@@ -1455,6 +1455,8 @@ private extension MyAppsViewController
 
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")
+            let toastView = ToastView(error: OperationError.wrongIP)
+            toastView.show(in: self)
             return
         }
 
@@ -1480,12 +1482,16 @@ private extension MyAppsViewController
             var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {
             print("Invalid URL: " + combinedString)
+            let toastView = ToastView(error: OperationError.wrongIP)
+            toastView.show(in: self)
             return("beans")
         }
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
+                let toastView = ToastView(error: OperationError.unabletoconnectSideJIT)
+                toastView.show(in: self)
                 return
             }
             
@@ -1505,19 +1511,14 @@ private extension MyAppsViewController
                         // add our notification request
                         UNUserNotificationCenter.current().add(request)
                     } else {
-                        let content = UNMutableNotificationContent()
-                        content.title = "An Error Occured"
-                        content.subtitle = "Please check your SideJITServer Console"
-                        content.sound = UNNotificationSound.default
-
-                        // show this notification five seconds from now
-                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-
-                        // choose a random identifier
-                        let request = UNNotificationRequest(identifier: "EnabledJITError", content: content, trigger: nil)
-
-                        // add our notification request
-                        UNUserNotificationCenter.current().add(request)
+                        let dataString = String(data: data, encoding: .utf8)
+                        if dataString == "Could not find device!" {
+                            let toastView = ToastView(error: OperationError.unabletoconSideJITDevice)
+                            toastView.show(in: self)
+                        } else if dataString?.hasPrefix("Could not find '") {
+                            let toastView = ToastView(error: OperationError.refreshsidejit)
+                            toastView.show(in: self)
+                        }
                 }
             }
         }.resume()

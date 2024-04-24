@@ -59,6 +59,7 @@ extension SettingsViewController
         case refreshSideJITServer
         case resetAdiPb
         case advancedSettings
+    
     }
 }
 
@@ -75,10 +76,10 @@ final class SettingsViewController: UITableViewController
     @IBOutlet private var accountEmailLabel: UILabel!
     @IBOutlet private var accountTypeLabel: UILabel!
     
-    @IBOutlet private var SideJITServer: UILabel!
-    
     @IBOutlet private var backgroundRefreshSwitch: UISwitch!
     @IBOutlet private var noIdleTimeoutSwitch: UISwitch!
+    
+    @IBOutlet private var refreshSideJITServer: UILabel!
     
     @IBOutlet private var versionLabel: UILabel!
     
@@ -108,16 +109,33 @@ final class SettingsViewController: UITableViewController
         debugModeGestureRecognizer.numberOfTouchesRequired = 3
         self.tableView.addGestureRecognizer(debugModeGestureRecognizer)
         
+        print(Bundle.main.infoDictionary)
+        var versionString: String = ""
         if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         {
-            self.versionLabel.text = NSLocalizedString(String(format: "SideStore %@", version), comment: "SideStore Version")
+            versionString += "SideStore \(version)"
+            if let xcode = Bundle.main.object(forInfoDictionaryKey: "DTXcode") as? String {
+                print(xcode)
+                versionString += " - Xcode \(xcode) - "
+                if let build = Bundle.main.object(forInfoDictionaryKey: "DTXcodeBuild") as? String {
+                    print(build)
+                    versionString += "\(build)"
+                }
+            }
+            if let pairing = Bundle.main.object(forInfoDictionaryKey: "ALTPairingFile") as? String {
+                let pair_test = pairing == "<insert pairing file here>"
+                if !pair_test {
+                    versionString += " - \(!pair_test)"
+                }
+            }
         }
         else
         {
-            self.versionLabel.text = NSLocalizedString("SideStore", comment: "")
+            versionString += "SideStore\t"
         }
-        
-        self.tableView.contentInset.bottom = 20
+        self.versionLabel.text = NSLocalizedString(versionString, comment: "SideStore Version")
+
+        self.tableView.contentInset.bottom = 40
         
         self.update()
         
@@ -497,7 +515,7 @@ extension SettingsViewController
         switch section
         {
         case .signIn where self.activeTeam != nil: return 1.0
-        case .account where self.activeTeam == nil: return 1.0            
+        case .account where self.activeTeam == nil: return 1.0
         case .signIn, .patreon, .appRefresh:
             let height = self.preferredHeight(for: self.prototypeHeaderFooterView, in: section, isHeader: false)
             return height
@@ -527,7 +545,6 @@ extension SettingsViewController
                 self.addRefreshAppsShortcut()
             }
             
-        
             
         case .credits:
             let row = CreditsRow.allCases[indexPath.row]
@@ -568,46 +585,46 @@ extension SettingsViewController
                 }
                 
             case .clearCache: self.clearCache()
-                //beans
-            case .refreshSideJITServer:
-                let alertController = UIAlertController(
-                    title: NSLocalizedString("Are you sure to Refresh SideJITServer?", comment: ""),
-                    message: NSLocalizedString("if you do not have SideJITServer setup this will do nothing", comment: ""),
-                    preferredStyle: UIAlertController.Style.actionSheet)
                 
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("Refresh", comment: ""), style: .destructive){ _ in
-                    if UserDefaults.standard.sidejitenable {
-                        var SJSURL = ""
-                        if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                            SJSURL = "http://sidejitserver._http._tcp.local:8080"
-                        } else {
-                            SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
-                        }  // replace with your URL
-                        let combinedString2 = SJSURL + "/re/"
+            case .refreshSideJITServer:
+            let alertController = UIAlertController(
+                title: NSLocalizedString("Are you sure to Refresh SideJITServer?", comment: ""),
+                message: NSLocalizedString("if you do not have SideJITServer setup this will do nothing", comment: ""),
+                preferredStyle: UIAlertController.Style.actionSheet)
 
-                        guard let url = URL(string: combinedString2) else {
-                            print("Invalid URL")
-                            return
-                        }
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("Refresh", comment: ""), style: .destructive){ _ in
+                if UserDefaults.standard.sidejitenable {
+                    var SJSURL = ""
+                    if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                        SJSURL = "http://sidejitserver._http._tcp.local:8080"
+                    } else {
+                        SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""
+                    }  // replace with your URL
+                    let combinedString2 = SJSURL + "/re/"
 
-                        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-                            if let error = error {
-                                print("Error: \(error)")
-                            } else {
-                                // Do nothing with data or response
-                            }
-                        }
-
-                        task.resume()
+                    guard let url = URL(string: combinedString2) else {
+                        print("Invalid URL")
+                        return
                     }
-                })
-                alertController.addAction(.cancel)
-                //Fix crash on iPad
-                alertController.popoverPresentationController?.sourceView = self.tableView
-                alertController.popoverPresentationController?.sourceRect = self.tableView.rectForRow(at: indexPath)
-                self.present(alertController, animated: true)
-                self.tableView.deselectRow(at: indexPath, animated: true)
-            
+
+                    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                        if let error = error {
+                            print("Error: \(error)")
+                        } else {
+                            // Do nothing with data or response
+                        }
+                    }
+
+                    task.resume()
+                }
+            })
+            alertController.addAction(.cancel)
+            //Fix crash on iPad
+            alertController.popoverPresentationController?.sourceView = self.tableView
+            alertController.popoverPresentationController?.sourceRect = self.tableView.rectForRow(at: indexPath)
+            self.present(alertController, animated: true)
+            self.tableView.deselectRow(at: indexPath, animated: true)
+                
             case .resetPairingFile:
                 let filename = "ALTPairingFile.mobiledevicepairing"
                 let fm = FileManager.default

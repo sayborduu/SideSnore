@@ -604,8 +604,6 @@ extension SettingsViewController
 
                     guard let url = URL(string: combinedString2) else {
                         print("Invalid URL")
-                        let toastView = ToastView(error: OperationError.wrongIP)
-                        toastView.show(in: self)
                         return
                     }
 

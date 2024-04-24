@@ -30,15 +30,15 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
             
             DatabaseManager.shared.persistentContainer.performBackgroundTask { (context) in
                 let apps = InstalledApp.all(in: context).map { (installedApp) in
-                    return App(identifier: installedApp.bundleIdentifier, display: installedApp.name)
+                    if UserDefaults.standard.sidejitenable {
+                        if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                            getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
+                        } else {
+                            getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                        }
+                    return
                 }
-                if UserDefaults.standard.sidejitenable {
-                    if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                        getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
-                    } else {
-                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                    }
-                }
+
                 
                 let collection = INObjectCollection(items: apps)
                 completion(collection, nil)

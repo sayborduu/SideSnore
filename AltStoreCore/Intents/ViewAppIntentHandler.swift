@@ -30,15 +30,13 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
             
             DatabaseManager.shared.persistentContainer.performBackgroundTask { (context) in
                 let apps = InstalledApp.all(in: context).map { (installedApp) in
-                    if UserDefaults.standard.sidejitenable {
-                        if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
-                            getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
-                        } else {
-                            getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                        }
-                    return
+                    if UserDefaults.standard.textInputSideJITServerurl ?? "" == "" {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
+                    } else {
+                        getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
+                    }
+                    return // App(identifier: installedApp.bundleIdentifier, display: installedApp.name)
                 }
-
                 
                 let collection = INObjectCollection(items: apps)
                 completion(collection, nil)
@@ -46,6 +44,8 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
         }
     }
 }
+
+
 
 func getrequest(from installedApp: String, IP ipadress: String) -> String? {
         var serverUrl = ipadress ?? ""

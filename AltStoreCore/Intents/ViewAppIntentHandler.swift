@@ -38,8 +38,8 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
                     return // App(identifier: installedApp.bundleIdentifier, display: installedApp.name)
                 }
                 
-                let collection = INObjectCollection(items: apps)
-                completion(collection, nil)
+                // let collection = INObjectCollection(items: apps)
+                // completion(collection, nil)
             }
         }
     }

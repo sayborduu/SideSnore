@@ -1076,7 +1076,7 @@ private extension MyAppsViewController
             toastView.show(in: self)
             return
         }
-
+        
         let previousProgress = AppManager.shared.refreshProgress(for: installedApp)
         guard previousProgress == nil else {
             previousProgress?.cancel()
@@ -1103,7 +1103,7 @@ private extension MyAppsViewController
             toastView.show(in: self)
             return
         }
-
+        
         func finish(_ result: Result<InstalledApp, Error>)
         {
             do
@@ -1129,7 +1129,7 @@ private extension MyAppsViewController
                 }
             }
         }
-                
+        
         if UserDefaults.standard.activeAppsLimit != nil, #available(iOS 13, *)
         {
             // UserDefaults.standard.activeAppsLimit is only non-nil on iOS 13.3.1 or later, so the #available check is just so we can use Combine.
@@ -1224,7 +1224,7 @@ private extension MyAppsViewController
         {
             message = NSLocalizedString("This will also erase all backup data for this app.", comment: "")
         }
-
+        
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         alertController.addAction(.cancel)
         alertController.addAction(UIAlertAction(title: NSLocalizedString("Remove", comment: ""), style: .destructive, handler: { (action) in
@@ -1253,7 +1253,7 @@ private extension MyAppsViewController
         }
         let title = NSLocalizedString("Start Backup?", comment: "")
         let message = NSLocalizedString("This will replace any previous backups. Please leave SideStore open until the backup is complete.", comment: "")
-
+        
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         alertController.addAction(.cancel)
         
@@ -1407,12 +1407,12 @@ private extension MyAppsViewController
                         getrequest(from: installedApp.resignedBundleIdentifier, IP: "http://sidejitserver._http._tcp.local:8080")
                     } else {
                         getrequest(from: installedApp.resignedBundleIdentifier, IP: UserDefaults.standard.textInputSideJITServerurl ?? "")
-                   }
+                        
+                    }
                 }
                 return
             } else {
-                let toastView = ToastView(error: OperationError.tooNewError)
-                toastView.show(in: self)
+                handleError(error: OperationError.tooNewError)
                 print("beans")
             }
         }
@@ -1434,6 +1434,12 @@ private extension MyAppsViewController
         }
     }
     
+    func handleError(error: OperationError) {
+        let toastView = ToastView(error: error)
+        toastView.show(in: self)
+        print("beans")
+    }
+    
     func getBundleIdentifier(from installedApp: String) -> String? {
         // Get the bundle ID
         let pattern = "BundleIdentifier = \"(.*?)\""
@@ -1452,14 +1458,14 @@ private extension MyAppsViewController
         let serverUdid: String = fetch_udid()?.toString() ?? ""
         let SJSURL = UserDefaults.standard.textInputSideJITServerurl ?? ""  // replace with your URL
         let combinedString2 = SJSURL + serverUdid + "/re/"
-
+        
         guard let url = URL(string: combinedString2) else {
             print("Invalid URL")
             let toastView = ToastView(error: OperationError.wrongIP)
             toastView.show(in: self)
             return
         }
-
+        
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 print("Error: \(error)")
@@ -1467,65 +1473,57 @@ private extension MyAppsViewController
                 // Do nothing with data or response
             }
         }
-
+        
         task.resume()
     }
     
     
-    func getrequest(from installedApp: String, IP ipadress: String) -> String? {
-            var serverUrl = ipadress ?? ""
-            let serverUdid: String = fetch_udid()?.toString() ?? ""
-            let appname = installedApp
-            let serveradress2 = serverUdid + "/" + appname
+    getrequest(from installedApp: String, IP ipadress: String) -> String? {
+        var serverUrl = ipadress ?? ""
+        let serverUdid: String = fetch_udid()?.toString() ?? ""
+        let appname = installedApp
+        let serveradress2 = serverUdid + "/" + appname
         
-        
-            var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
+        var combinedString = "\(serverUrl)" + "/" + serveradress2 + "/"
         guard let url = URL(string: combinedString) else {
-            print("Invalid URL: " + combinedString)
-            let toastView = ToastView(error: OperationError.wrongIP)
-            toastView.show(in: self)
+            handleError(error: OperationError.wrongIP)
             return("beans")
         }
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                let toastView = ToastView(error: OperationError.unabletoconnectSideJIT)
-                toastView.show(in: self)
+                handleError(error: OperationError.unabletoconnectSideJIT)
                 return
             }
             
             if let data = data {
-                    if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
-                        let content = UNMutableNotificationContent()
-                        content.title = "JIT Successfully Enabled"
-                        content.subtitle = "JIT Enabled For \(installedApp)"
-                        content.sound = UNNotificationSound.default
-
-                        // show this notification five seconds from now
-                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-
-                        // choose a random identifier
-                        let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
-
-                        // add our notification request
-                        UNUserNotificationCenter.current().add(request)
-                    } else {
-                        let dataString = String(data: data, encoding: .utf8)
-                        if dataString == "Could not find device!" {
-                            let toastView = ToastView(error: OperationError.unabletoconSideJITDevice)
-                            toastView.show(in: self)
-                        } else if dataString?.hasPrefix("Could not find '") {
-                            let toastView = ToastView(error: OperationError.refreshsidejit)
-                            toastView.show(in: self)
-                        }
+                if let dataString = String(data: data, encoding: .utf8), dataString == "Enabled JIT for '\(installedApp)'!" {
+                    let content = UNMutableNotificationContent()
+                    content.title = "JIT Successfully Enabled"
+                    content.subtitle = "JIT Enabled For \(installedApp)"
+                    content.sound = UNNotificationSound.default
+                    
+                    // show this notification five seconds from now
+                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+                    
+                    // choose a random identifier
+                    let request = UNNotificationRequest(identifier: "EnabledJIT", content: content, trigger: nil)
+                    
+                    // add our notification request
+                    UNUserNotificationCenter.current().add(request)
+                } else {
+                    let dataString = String(data: data, encoding: .utf8)
+                    if dataString == "Could not find device!" {
+                        handleError(error: OperationError.unabletoconSideJITDevice)
+                    } else if dataString?.hasPrefix("Could not find '") != nil {
+                        handleError(error: OperationError.refreshsidejit)
+                    }
                 }
             }
         }.resume()
         return("")
     }
-}
-
+    
 private extension MyAppsViewController
 {
     @objc func didFetchSource(_ notification: Notification)

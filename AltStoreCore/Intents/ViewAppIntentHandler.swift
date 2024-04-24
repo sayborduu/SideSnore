@@ -40,7 +40,6 @@ public class ViewAppIntentHandler: NSObject, ViewAppIntentHandling
                 
                 // let collection = INObjectCollection(items: apps)
                 // completion(collection, nil)
-            }
         }
     }
 }
@@ -81,15 +80,6 @@ func getrequest(from installedApp: String, IP ipadress: String) -> String? {
 
                 // add our notification request
                 UNUserNotificationCenter.current().add(request)
-            } else {
-                let dataString = String(data: data, encoding: .utf8)
-                if dataString == "Could not find device!" {
-                    let toastView = ToastView(error: OperationError.unabletoconSideJITDevice)
-                    toastView.show(in: self)
-                } else if dataString?.hasPrefix("Could not find '") {
-                    let toastView = ToastView(error: OperationError.refreshsidejit)
-                    toastView.show(in: self)
-                }
             }
         }
     }.resume()

@@ -1530,6 +1530,7 @@
 				BFD2476B2284B9A500981D42 /* Products */,
 				B33FFB8F295F8CF2002259E6 /* Recovered References */,
 			);
+			indentWidth = 3;
 			sourceTree = "<group>";
 		};
 		BFD2476B2284B9A500981D42 /* Products */ = {

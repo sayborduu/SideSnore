@@ -172,6 +172,7 @@ private extension SettingsViewController
               Stossy = "true"
               print(Stossy)
            } else {
+              var Stossy: String = "GOATED"
               Stossy = "false"
               print(Stossy)
               self.accountEmailLabel.text = team.account.appleID

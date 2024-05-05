@@ -1,6 +1,6 @@
 # SideSnore
 
-> SideStore is an *untethered, community driven* alternative app store for non-jailbroken iOS devices 
+> SideSnore is an *untethered, community driven* alternative app store for non-jailbroken iOS devices 
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
